@@ -1,3 +1,7 @@
 # Ignoring python cache
 
 *.pyc
+
+# venv
+
+.venv
