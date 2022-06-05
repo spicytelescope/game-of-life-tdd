@@ -14,3 +14,7 @@ game-of-life-tdd/
 ├─ tests/
 │  ├─ grid_test.py # tests the grid functions
 ```
+
+*NB -  Naming convention :*
+
+This project follows the naming conventing edited here : https://github.com/naming-convention/naming-convention-guides/tree/master/python
