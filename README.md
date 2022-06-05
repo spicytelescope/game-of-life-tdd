@@ -9,7 +9,7 @@
 game-of-life-tdd/
 ├─ src/
 │  ├─ graphic_lib.py # UI & graphic rendering functions
-│  ├─ grid_lib.py # main game handling
+│  ├─ core_lib.py # core functions handling
 ├─ tests/
 │  ├─ grid_test.py # tests the grid functions
 ```
