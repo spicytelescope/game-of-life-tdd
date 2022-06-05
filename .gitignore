@@ -1,6 +1,7 @@
-# Ignoring python cache
+# ignoring cache from build files & test / linter runner
 
 *.pyc
+*cache*
 
 # venv
 
