@@ -3,6 +3,7 @@
 *.pyc
 *cache*
 .tox
+src/UNKNOWN.egg-info/*
 
 # venv
 

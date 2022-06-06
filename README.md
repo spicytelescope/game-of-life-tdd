@@ -18,3 +18,11 @@ game-of-life-tdd/
 *NB -  Naming convention :*
 
 This project follows the naming conventing edited here : https://github.com/naming-convention/naming-convention-guides/tree/master/python
+
+## Installation
+
+With `python3.8+`, run :
+
+```bash
+venv .env && source .venv/bin/activate && pip3 install -r requirements.txt
+```
