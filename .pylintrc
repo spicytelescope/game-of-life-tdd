@@ -3,7 +3,8 @@ jobs=4
 
 [BASIC]
 good-names=game-of-life-tdd
+disable=E0401, C0301, C0103, E0015
 
 [pre-commit-hook]
 command=custom_pylint
-disable=E0401, C0301, C0103
+disable=E0401, C0301, C0103, E0015
