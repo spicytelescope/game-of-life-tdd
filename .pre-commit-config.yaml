@@ -42,6 +42,8 @@ repos:
         language: system
         types: [python]
         args: [
+            "*/src",
+            "*/tests",
             "-rn", # Only display messages
             "-sn", # Don't display the score
           ]
