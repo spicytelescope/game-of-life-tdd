@@ -7,6 +7,7 @@ from numpy.testing import assert_array_equal
 from src.core_lib.CoreGrid import CoreGrid
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_HIGH
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_LOW
+from tests.core_lib_tests.test_config import BAD_DIM_GRID_ODD
 from tests.core_lib_tests.test_config import INCORRECT_INIT_GRID
 from tests.core_lib_tests.test_config import LOAD_TEST_EXPECTED_GRID
 from tests.core_lib_tests.test_config import LOAD_TEST_INIT_GRID
@@ -43,15 +44,17 @@ def test_load_core_behaviour() -> None:
 def test_bad_grid_dim() -> None:
     """check if expected crash regarding inputed grid having dimensions outside limits defined in the config file"""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         grid: CoreGrid = CoreGrid(BAD_DIM_GRID_HIGH)
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         grid: CoreGrid = CoreGrid(BAD_DIM_GRID_LOW)
+    with pytest.raises(AssertionError):
+        grid: CoreGrid = CoreGrid(BAD_DIM_GRID_ODD)
 
 
 def test_incorrect_grid_init() -> None:
     """check if expected crash regarding incorrect values (e.g. not 1 or 0) when initialising grid"""
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         grid: CoreGrid = CoreGrid(INCORRECT_INIT_GRID)
 
 

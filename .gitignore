@@ -4,6 +4,7 @@
 *cache*
 .tox
 src/UNKNOWN.egg-info/*
+.coverage
 
 # venv
 
