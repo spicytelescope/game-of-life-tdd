@@ -25,10 +25,10 @@ def test_core_behaviour() -> None:
     for _ in range(NORMAL_N_TURN):
         grid.applyRules()
 
-    assert assert_array_equal(grid.getCellMat(), NORMAL_EXPECTED_GRID)
+    assert_array_equal(grid.getCellMat(), NORMAL_EXPECTED_GRID)
 
 
-def load_test_core_behaviour() -> None:
+def test_load_core_behaviour() -> None:
 
     """checking core grid behaviour with a huge number of turn"""
 
@@ -37,7 +37,7 @@ def load_test_core_behaviour() -> None:
     for _ in range(LOAD_TEST_N_TURN):
         grid.applyRules()
 
-    assert assert_array_equal(grid.getCellMat(), LOAD_TEST_EXPECTED_GRID)
+    assert_array_equal(grid.getCellMat(), LOAD_TEST_EXPECTED_GRID)
 
 
 def test_bad_grid_dim() -> None:
@@ -61,4 +61,4 @@ def test_no_living_cells() -> None:
     grid: CoreGrid = CoreGrid(NO_LIVING_INIT_GRID)
     grid.applyRules()
 
-    assert assert_array_equal(grid.getCellMat(), NO_LIVING_EXPECTED_GRID)
+    assert_array_equal(grid.getCellMat(), NO_LIVING_EXPECTED_GRID)
