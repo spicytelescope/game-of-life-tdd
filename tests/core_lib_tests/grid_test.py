@@ -2,17 +2,20 @@
 Tests regarding the CoreGrid functions
 """
 import pytest
-from confTests import BAD_DIM_GRID_HIGH
-from confTests import BAD_DIM_GRID_LOW
-from confTests import LOAD_TEST_EXPECTED_GRID
-from confTests import LOAD_TEST_INIT_GRID
-from confTests import LOAD_TEST_N_TURN
-from confTests import NO_LIVING_EXPECTED_GRID
-from confTests import NO_LIVING_INIT_GRID
-from confTests import NORMAL_EXPECTED_GRID
-from confTests import NORMAL_INIT_GRID
-from confTests import NORMAL_N_TURN
 from src.core_lib.CoreGrid import CoreGrid
+from tests.core_lib_tests.test_config import BAD_DIM_GRID_HIGH
+from tests.core_lib_tests.test_config import BAD_DIM_GRID_LOW
+from tests.core_lib_tests.test_config import INCORRECT_INIT_GRID
+from tests.core_lib_tests.test_config import LOAD_TEST_EXPECTED_GRID
+from tests.core_lib_tests.test_config import LOAD_TEST_INIT_GRID
+from tests.core_lib_tests.test_config import LOAD_TEST_N_TURN
+from tests.core_lib_tests.test_config import NO_LIVING_EXPECTED_GRID
+from tests.core_lib_tests.test_config import NO_LIVING_INIT_GRID
+from tests.core_lib_tests.test_config import NORMAL_EXPECTED_GRID
+from tests.core_lib_tests.test_config import NORMAL_INIT_GRID
+from tests.core_lib_tests.test_config import NORMAL_N_TURN
+
+# pylint: disable=unused-variable
 
 
 def test_core_behaviour() -> None:
@@ -41,7 +44,7 @@ def test_bad_grid_dim() -> None:
     """check if expected crash regarding inputed grid having dimensions outside limits defined in the config file"""
 
     with pytest.raises(ValueError):
-        grid: CoreGrid = CoreGrid(BAD_DIM_GRID_HIGH)  # pylint: disable=unused-variable
+        grid: CoreGrid = CoreGrid(BAD_DIM_GRID_HIGH)
     with pytest.raises(ValueError):
         grid: CoreGrid = CoreGrid(BAD_DIM_GRID_LOW)
 
@@ -53,3 +56,9 @@ def test_no_living_cells() -> None:
     grid.applyRules()
 
     assert grid.getCellMat() == NO_LIVING_EXPECTED_GRID
+
+
+def test_incorrect_grid_init() -> None:
+    """check if expected crash regarding incorrect values (e.g. not 1 or 0) when initialising grid"""
+    with pytest.raises(ValueError):
+        grid: CoreGrid = CoreGrid(INCORRECT_INIT_GRID)

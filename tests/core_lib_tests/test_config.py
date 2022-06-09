@@ -14,7 +14,7 @@ NORMAL_N_TURN: int = 5
 INCORRECT_INIT_GRID: np.ndarray = np.array([[3, 2, 1]])
 
 # check if bad res for init trigger normal behaviour, in regards to the min/max res possible
-BAD_DIM_GRID_HIGH = np.array(np.empty((100000, 100000)))
+BAD_DIM_GRID_HIGH = np.array(np.empty((2000, 2000)))
 BAD_DIM_GRID_LOW = np.array(np.empty((0, 0)))
 
 # checking core grid behaviour with a huge number of turn
