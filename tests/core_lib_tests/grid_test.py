@@ -27,7 +27,9 @@ def test_core_behaviour() -> None:
     for _ in range(NORMAL_N_TURN):
         grid.applyRules()
 
-    assert_array_equal(grid.getCellMat(), NORMAL_EXPECTED_GRID)
+    assert_array_equal(
+        grid.getCellMat(), NORMAL_EXPECTED_GRID, err_msg="Grids aren't matching"
+    )
 
 
 def test_load_core_behaviour() -> None:
@@ -39,7 +41,9 @@ def test_load_core_behaviour() -> None:
     for _ in range(LOAD_TEST_N_TURN):
         grid.applyRules()
 
-    assert_array_equal(grid.getCellMat(), LOAD_TEST_EXPECTED_GRID)
+    assert_array_equal(
+        grid.getCellMat(), LOAD_TEST_EXPECTED_GRID, err_msg="Grids aren't matching"
+    )
 
 
 def test_bad_grid_dim() -> None:
@@ -65,11 +69,16 @@ def test_no_living_cells() -> None:
     grid: CoreGrid = CoreGrid(NO_LIVING_INIT_GRID)
     grid.applyRules()
 
-    assert_array_equal(grid.getCellMat(), NO_LIVING_EXPECTED_GRID)
+    assert_array_equal(
+        grid.getCellMat(),
+        NO_LIVING_EXPECTED_GRID,
+        err_msg="Grids aren't matching",
+    )
 
 
 def test_incorrect_set_cell() -> None:
     """checking if trying to add incorrect value (e.g. not in 0 or 1 to the grid using setCell method raise error)"""
 
-    grid: CoreGrid = CoreGrid(NORMAL_INIT_GRID)
-    grid.setCell(0, 0, INCORRECT_VALUE_SET_CELL)
+    with pytest.raises(AssertionError):
+        grid: CoreGrid = CoreGrid(NORMAL_INIT_GRID)
+        grid.setCell(0, 0, INCORRECT_VALUE_SET_CELL)  # type: ignore
