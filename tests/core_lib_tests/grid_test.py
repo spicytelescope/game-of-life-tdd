@@ -9,6 +9,7 @@ from tests.core_lib_tests.test_config import BAD_DIM_GRID_HIGH
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_LOW
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_ODD
 from tests.core_lib_tests.test_config import INCORRECT_INIT_GRID
+from tests.core_lib_tests.test_config import INCORRECT_VALUE_SET_CELL
 from tests.core_lib_tests.test_config import LOAD_TEST_EXPECTED_GRID
 from tests.core_lib_tests.test_config import LOAD_TEST_INIT_GRID
 from tests.core_lib_tests.test_config import LOAD_TEST_N_TURN
@@ -65,3 +66,10 @@ def test_no_living_cells() -> None:
     grid.applyRules()
 
     assert_array_equal(grid.getCellMat(), NO_LIVING_EXPECTED_GRID)
+
+
+def test_incorrect_set_cell() -> None:
+    """checking if trying to add incorrect value (e.g. not in 0 or 1 to the grid using setCell method raise error)"""
+
+    grid: CoreGrid = CoreGrid(NORMAL_INIT_GRID)
+    grid.setCell(0, 0, INCORRECT_VALUE_SET_CELL)
