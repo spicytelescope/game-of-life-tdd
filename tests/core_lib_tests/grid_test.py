@@ -32,6 +32,7 @@ def test_core_behaviour() -> None:
     )
 
 
+# @pytest.mark.skip(reason="is way too slow")
 def test_load_core_behaviour() -> None:
 
     """checking core grid behaviour with a huge number of turn"""

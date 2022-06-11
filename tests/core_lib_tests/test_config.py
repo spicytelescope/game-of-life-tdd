@@ -45,7 +45,7 @@ BAD_DIM_GRID_LOW = np.array(np.empty((0, 0)))
 BAD_DIM_GRID_ODD = np.array(np.empty((3, 1)))
 
 # checking core grid behaviour with a huge number of turn
-LOAD_TEST_N_TURN: int = 100_000
+LOAD_TEST_N_TURN: int = 10_000
 LOAD_TEST_INIT_GRID: np.ndarray = np.array(
     [
         [0, 0, 0, 0, 0, 0],
@@ -65,9 +65,9 @@ LOAD_TEST_EXPECTED_GRID: np.ndarray = np.array(
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0, 0],
-        [0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0],
     ]
 )
 

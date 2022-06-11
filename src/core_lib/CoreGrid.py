@@ -2,6 +2,7 @@
 """
 from typing import Dict
 
+import copy
 import numpy as np
 from numpy.typing import _Shape
 from tabulate import tabulate  # type: ignore
@@ -16,6 +17,8 @@ class CoreGrid:
 
     def __init__(self, default_cell_mat: np.ndarray):
 
+        self.turn = 0
+
         self.cell_mat: np.ndarray = default_cell_mat
         self.old_cell_mat: np.ndarray = default_cell_mat
         self.grid_dim: _Shape = default_cell_mat.shape
@@ -25,6 +28,7 @@ class CoreGrid:
     def prettyPrintCellMat(self, tabulate_fmt="grid") -> None:
         """Pretty print the grid using tabulate 'grid' format"""
 
+        print(f"================ #{self.turn} ================")
         print(tabulate(self.cell_mat, tablefmt=tabulate_fmt))
 
     def applyRules(
@@ -32,24 +36,54 @@ class CoreGrid:
     ) -> None:
         """Apply the 3 main rules of the Game of Life to the main matrix"""
 
-    def _applyRulessOnCell(self, i: int, j: int) -> GRID_CELL_STATE_TYPE:
+        self.turn += 1
 
+        self.old_cell_mat = copy.deepcopy(self.cell_mat)
+
+        for i in range(self.grid_dim[0]):
+            for j in range(self.grid_dim[1]):
+                self.cell_mat[i][j] = self._applyRulesOnCell(i, j)
+        # self.prettyPrintCellMat()
+
+    def _applyRulesOnCell(self, i: int, j: int) -> GRID_CELL_STATE_TYPE:
+        """apply the rules on one cell, selected by its indexes on the grid
+
+        Args:
+            i (int): row index of the cell
+            j (int): column index of the cell
+
+        Returns:
+            GRID_CELL_STATE_TYPE: the next state on the cell after 1 turn
+        """
+        cell_state: GRID_CELL_STATE_TYPE = self.old_cell_mat[i][j]
         next_state: GRID_CELL_STATE_TYPE = DEAD_CELL_STATE
-        cell_state: GRID_CELL_STATE_TYPE = self.cell_mat[i][j]
 
         cell_surrounding: np.ndarray = self.__getCurrentNeighbors(i, j)
         if cell_state == ALIVE_CELL_STATE:
             # substracting one because the current cell tested is alrady on the 'alive' state
-            if not (
-                sum(x.count(ALIVE_CELL_STATE) for x in cell_surrounding) - 1 in [2, 3]
-            ):
-                next_state = DEAD_CELL_STATE
+            if sum(
+                np.count_nonzero(x == ALIVE_CELL_STATE) for x in cell_surrounding
+            ) - 1 in [2, 3]:
+                next_state = ALIVE_CELL_STATE  # alive cell surviving, rule #1
         else:
-            pass
+            if (
+                sum(np.count_nonzero(x == ALIVE_CELL_STATE) for x in cell_surrounding)
+                == 3
+            ):
+                next_state = ALIVE_CELL_STATE  # dead cell becoming alive, rule #2
 
         return next_state
 
     def __getCurrentNeighbors(self, i: int, j: int) -> np.ndarray:
+        """Return the current neighborhood of the cell at row i and column j, regardless of the border of the grid, set the out-of-border neighbour to DEAD_CELL_STATE.
+
+        Args:
+            i (int): row index of the cell
+            j (int): column index of the cell
+
+        Returns:
+            np.ndarray: neighborhood of the cell at row i and column j of the grid
+        """
         surr_neighbours: np.ndarray = np.full((3, 3), DEAD_CELL_STATE)
 
         for offset_i in [-1, 0, 1]:
@@ -58,13 +92,13 @@ class CoreGrid:
                 if not (
                     i + offset_i < 0
                     or j + offset_j < 0
-                    or i + offset_i >= self.grid_dim[1]
-                    or j + offset_j >= self.grid_dim[0]
+                    or i + offset_i > self.grid_dim[0] - 1
+                    or j + offset_j > self.grid_dim[1] - 1
                 ):
                     # retrieving cell mat value to create the neighbours
-                    surr_neighbours[offset_i][offset_j] = self.cell_mat[i + offset_i][
-                        j + offset_j
-                    ]
+                    surr_neighbours[offset_i + 1][offset_j + 1] = self.old_cell_mat[
+                        i + offset_i
+                    ][j + offset_j]
 
         return surr_neighbours
 
