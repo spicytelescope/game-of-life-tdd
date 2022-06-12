@@ -5,5 +5,8 @@
     "res_min": [200, 100],
     "grid_dim": [50, 50],
     "min_grid_dim": [6, 6]
+  },
+  "simulation": {
+    "turn_timeout": 200
   }
 }

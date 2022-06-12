@@ -17,6 +17,7 @@ def fetch_game_config(conf_filepath: str = "../config.json"):
     script_path: str = os.path.dirname(os.path.abspath(__file__))
     conf_file_path: str = f"{script_path}/{conf_filepath}"
 
+    # TODO extension & file error handling
     with open(conf_file_path, encoding="utf8") as f:
         conf_data: Dict = json.load(f)
 

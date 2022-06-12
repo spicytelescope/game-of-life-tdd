@@ -43,11 +43,24 @@ class UIRunner:
             [
                 low <= x <= high
                 for low, x, high in zip(
-                    self._config["min_grid_dim"],
+                    self._config["videoSettings"]["min_grid_dim"],
                     self.grid_dim,
-                    self._config["res"],
+                    self._config["videoSettings"]["res"],
                 )
             ]
-        ), f"grid_dim 0 ({self.grid_dim[0]}) should be between {self._config['min_grid_dim'][0]} and {self._config['res'][0]}"
+        ), f"grid_dim ({self.grid_dim}) should be between {self._config['videoSettings']['min_grid_dim']} and {self._config['videoSettings']['res']}"
 
-        # TODO res check-up
+        assert (
+            np.array(self.res) % 2 == 0
+        ).all(), "grid dimensions should be even numbers"
+
+        assert np.all(
+            [
+                low <= x <= high
+                for low, x, high in zip(
+                    self._config["videoSettings"]["res_min"],
+                    self.res,
+                    self._config["videoSettings"]["res_max"],
+                )
+            ]
+        ), f"res ({self.res}) should be between {self._config['videoSettings']['res_min']} and {self._config['videoSettings']['res_max']}"

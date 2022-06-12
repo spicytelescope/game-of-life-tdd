@@ -118,7 +118,7 @@ class CoreGrid:
                     self.gameConfig["res"],
                 )
             ]
-        ), f"grid_dim 0 ({self.grid_dim[0]}) should be between {self.gameConfig['min_grid_dim'][0]} and {self.gameConfig['res'][0]}"
+        ), f"grid_dim ({self.grid_dim}) should be between {self.gameConfig['min_grid_dim']} and {self.gameConfig['res']}"
 
         assert (
             (self.cell_mat == DEAD_CELL_STATE) | (self.cell_mat == ALIVE_CELL_STATE)
