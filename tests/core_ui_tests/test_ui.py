@@ -5,9 +5,9 @@ Tests regarding the ui_lib functions
 
 import pytest
 from src.ui_lib.UiRunner import UIRunner
-from tests.core_lib_tests.test_config import BAD_DIM_HIGH
-from tests.core_lib_tests.test_config import BAD_DIM_LOW
-from tests.core_lib_tests.test_config import BAD_DIM_ODD
+from tests.core_ui_tests.test_config import BAD_DIM_HIGH
+from tests.core_ui_tests.test_config import BAD_DIM_LOW
+from tests.core_ui_tests.test_config import BAD_DIM_ODD
 from tests.core_ui_tests.test_config import BAD_RES_HIGH
 from tests.core_ui_tests.test_config import BAD_RES_LOW
 from tests.core_ui_tests.test_config import BAD_RES_ODD

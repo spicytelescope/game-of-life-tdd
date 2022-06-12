@@ -1,7 +1,8 @@
 """
 Tests regarding the CoreGrid functions
 """
-# pylint: disable=unused-variable
+# pylint: disable=unused-variable,unused-argument, redefined-outer-name
+import os
 import pytest
 from numpy.testing import assert_array_equal
 from src.core_lib.CoreGrid import CoreGrid
@@ -19,6 +20,19 @@ from tests.core_lib_tests.test_config import NO_LIVING_INIT_GRID
 from tests.core_lib_tests.test_config import NORMAL_EXPECTED_GRID
 from tests.core_lib_tests.test_config import NORMAL_INIT_GRID
 from tests.core_lib_tests.test_config import NORMAL_N_TURN
+
+
+@pytest.fixture()
+def mock_config_file_handler():
+    """Fixture to create a mock config file and clean-up it"""
+    script_path: str = os.path.dirname(os.path.abspath(__file__))
+    with open(f"{script_path}/../../src/utils/config.yaml", "w", encoding="utf-8") as f:
+        f.write("Config file with bad extension")
+        f.close()
+
+    yield
+
+    os.remove(f"{script_path}/../../src/utils/config.yaml")
 
 
 def test_core_behaviour() -> None:
@@ -85,22 +99,15 @@ def test_incorrect_set_cell() -> None:
         grid.setCell(0, 0, INCORRECT_VALUE_SET_CELL)  # type: ignore
 
 
-# def test_bad_config() -> None:
-#     """checking if trying to load incorrect config raises expected exception
-#     """
-
-#     with pytest.raises(FileNotFoundError):
-
-
-def test_incorrect_config_file() -> None:
-    """checking if trying to load at bad location a config file, or with bad extension raises expected exception"""
+def test_bad_config() -> None:
+    """checking if trying to load incorrect config raises expected exception"""
 
     with pytest.raises(FileNotFoundError):
         fetch_game_config("../../some_bad_path.json")
 
-    with pytest.raises(AssertionError):
-        with open("../../src/utils/config.yml", encoding="utf-8") as f:
-            f.write("Config file with bad extension")
-            f.close()
 
-        fetch_game_config("config.yml")
+def test_incorrect_config_file(mock_config_file_handler) -> None:
+    """checking if trying to load at bad location a config file, or with bad extension raises expected exception"""
+
+    with pytest.raises(AssertionError):
+        fetch_game_config("config.yaml")

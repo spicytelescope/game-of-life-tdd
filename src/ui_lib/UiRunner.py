@@ -2,6 +2,7 @@
 """
 from typing import List, Union
 import numpy as np
+import pygame
 from src.ui_lib.DisplayPanel import DisplayPanel
 from src.ui_lib.InfoPanel import InfoPanel
 from src.ui_lib.SettingPanel import SettingPanel
@@ -16,12 +17,6 @@ class UIRunner:
         res: Union[List[int], None] = None,
         grid_dim: Union[List[int], None] = None,
     ):
-
-        # ui elements
-        self.display_panel: DisplayPanel = DisplayPanel()
-        self.setting_panel: SettingPanel = SettingPanel()
-        self.info_panel: InfoPanel = InfoPanel()
-
         # parameters
         self._config = fetch_game_config()
         self.res: List[int] = (
@@ -31,6 +26,17 @@ class UIRunner:
             grid_dim if grid_dim is not None else self._config["videoSettings"]["res"]
         )
         self.validateUiParams()
+
+        # main window
+        self.screen: pygame.surface.Surface = pygame.display.set_mode(self.res)
+
+        # ui elements
+        self.display_panel: DisplayPanel = DisplayPanel()
+        self.setting_panel: SettingPanel = SettingPanel()
+        self.info_panel: InfoPanel = InfoPanel()
+
+    def draw(self):
+        """Draw each"""
 
     def validateUiParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
