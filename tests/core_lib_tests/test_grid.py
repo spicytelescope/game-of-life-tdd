@@ -5,6 +5,7 @@ Tests regarding the CoreGrid functions
 import pytest
 from numpy.testing import assert_array_equal
 from src.core_lib.CoreGrid import CoreGrid
+from src.utils.confUtils import fetch_game_config
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_HIGH
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_LOW
 from tests.core_lib_tests.test_config import BAD_DIM_GRID_ODD
@@ -47,15 +48,14 @@ def test_load_core_behaviour() -> None:
     )
 
 
-def test_bad_grid_dim() -> None:
+@pytest.mark.parametrize(
+    "test_input_grid_dim", [BAD_DIM_GRID_HIGH, BAD_DIM_GRID_LOW, BAD_DIM_GRID_ODD]
+)
+def test_bad_grid_dim(test_input_grid_dim) -> None:
     """check if expected crash regarding inputed grid having dimensions outside limits defined in the config file"""
 
     with pytest.raises(AssertionError):
-        grid: CoreGrid = CoreGrid(BAD_DIM_GRID_HIGH)
-    with pytest.raises(AssertionError):
-        grid: CoreGrid = CoreGrid(BAD_DIM_GRID_LOW)
-    with pytest.raises(AssertionError):
-        grid: CoreGrid = CoreGrid(BAD_DIM_GRID_ODD)
+        grid: CoreGrid = CoreGrid(test_input_grid_dim)
 
 
 def test_incorrect_grid_init() -> None:
@@ -78,8 +78,29 @@ def test_no_living_cells() -> None:
 
 
 def test_incorrect_set_cell() -> None:
-    """checking if trying to add incorrect value (e.g. not in 0 or 1 to the grid using setCell method raise error)"""
+    """checking if trying to add incorrect value (e.g. not in 0 or 1 to the grid using setCell method raise error) raise expected error"""
 
     with pytest.raises(AssertionError):
         grid: CoreGrid = CoreGrid(NORMAL_INIT_GRID)
         grid.setCell(0, 0, INCORRECT_VALUE_SET_CELL)  # type: ignore
+
+
+# def test_bad_config() -> None:
+#     """checking if trying to load incorrect config raises expected exception
+#     """
+
+#     with pytest.raises(FileNotFoundError):
+
+
+def test_incorrect_config_file() -> None:
+    """checking if trying to load at bad location a config file, or with bad extension raises expected exception"""
+
+    with pytest.raises(FileNotFoundError):
+        fetch_game_config("../../some_bad_path.json")
+
+    with pytest.raises(AssertionError):
+        with open("../../src/utils/config.yml", encoding="utf-8") as f:
+            f.write("Config file with bad extension")
+            f.close()
+
+        fetch_game_config("config.yml")

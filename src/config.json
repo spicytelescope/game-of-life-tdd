@@ -1,7 +1,7 @@
 {
   "videoSettings": {
     "res": [720, 480],
-    "res_max": [10000, 10000],
+    "res_max": [3840, 2160],
     "res_min": [200, 100],
     "grid_dim": [50, 50],
     "min_grid_dim": [6, 6]

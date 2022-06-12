@@ -1,4 +1,4 @@
-"""Core functions for the grid processing
+"""CoreGric class definition
 """
 from typing import Dict
 
@@ -13,12 +13,13 @@ from src.utils.CustomTypes import GRID_CELL_STATE_TYPE
 
 
 class CoreGrid:
-    """Handle the main grid which keep tracks of the current state of the game's cells"""
+    """Handle the main grid which keep tracks of the current state of the game's cells, core functions for the grid processing"""
 
     def __init__(self, default_cell_mat: np.ndarray):
 
-        self.turn = 0
+        self._turn = 0
 
+        self.initial_cell_mat: np.ndarray = default_cell_mat  # used for resetCellmat()
         self.cell_mat: np.ndarray = default_cell_mat
         self.old_cell_mat: np.ndarray = default_cell_mat
         self.grid_dim: _Shape = default_cell_mat.shape
@@ -28,7 +29,7 @@ class CoreGrid:
     def prettyPrintCellMat(self, tabulate_fmt="grid") -> None:
         """Pretty print the grid using tabulate 'grid' format"""
 
-        print(f"================ #{self.turn} ================")
+        print(f"================ #{self._turn} ================")
         print(tabulate(self.cell_mat, tablefmt=tabulate_fmt))
 
     def applyRules(
@@ -36,13 +37,12 @@ class CoreGrid:
     ) -> None:
         """Apply the 3 main rules of the Game of Life to the main matrix"""
 
-        self.turn += 1
-
+        self._turn += 1
         self.old_cell_mat = copy.deepcopy(self.cell_mat)
 
         for i in range(self.grid_dim[0]):
             for j in range(self.grid_dim[1]):
-                self.cell_mat[i][j] = self._applyRulesOnCell(i, j)
+                self.setCell(i, j, self._applyRulesOnCell(i, j))
         # self.prettyPrintCellMat()
 
     def _applyRulesOnCell(self, i: int, j: int) -> GRID_CELL_STATE_TYPE:
@@ -147,11 +147,11 @@ class CoreGrid:
 
     def resetCellMat(self) -> None:
         """Reset the grid internal state (and it's previous state too)"""
-        self.cell_mat = np.array([])
-        self.old_cell_mat = np.array([])
+        self.cell_mat = copy.deepcopy(self.initial_cell_mat)
+        self.old_cell_mat = copy.deepcopy(self.initial_cell_mat)
 
 
 if __name__ == "__main__":
 
-    grid = CoreGrid(np.zeros((24, 24)))
+    grid: CoreGrid = CoreGrid(np.zeros((24, 24)))
     grid.prettyPrintCellMat()
