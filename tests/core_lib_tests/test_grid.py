@@ -30,9 +30,15 @@ def mock_config_file_handler():
         f.write("Config file with bad extension")
         f.close()
 
+    with open(
+        f"{script_path}/../../src/utils/bad_config.json", "w", encoding="utf-8"
+    ) as f:
+        f.write('{"videoSettings": {"res": [124,124]}}')
+        f.close()
     yield
 
     os.remove(f"{script_path}/../../src/utils/config.yaml")
+    os.remove(f"{script_path}/../../src/utils/bad_config.json")
 
 
 def test_core_behaviour() -> None:
@@ -111,3 +117,10 @@ def test_incorrect_config_file(mock_config_file_handler) -> None:
 
     with pytest.raises(AssertionError):
         fetch_game_config("config.yaml")
+
+
+def test_missing_fields_config_file(mock_config_file_handler) -> None:
+    """checking if trying to load a config file with missing fields raises expected exception"""
+
+    with pytest.raises(AssertionError):
+        fetch_game_config("bad_config.json")
