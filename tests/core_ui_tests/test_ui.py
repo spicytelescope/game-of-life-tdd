@@ -5,16 +5,16 @@ Tests regarding the ui_lib functions
 
 import pytest
 from src.ui_lib.UiRunner import UIRunner
-from tests.core_lib_tests.test_config import BAD_DIM_GRID_HIGH
-from tests.core_lib_tests.test_config import BAD_DIM_GRID_LOW
-from tests.core_lib_tests.test_config import BAD_DIM_GRID_ODD
+from tests.core_lib_tests.test_config import BAD_DIM_HIGH
+from tests.core_lib_tests.test_config import BAD_DIM_LOW
+from tests.core_lib_tests.test_config import BAD_DIM_ODD
 from tests.core_ui_tests.test_config import BAD_RES_HIGH
 from tests.core_ui_tests.test_config import BAD_RES_LOW
 from tests.core_ui_tests.test_config import BAD_RES_ODD
 
 
 @pytest.mark.parametrize(
-    "test_input_grid_dim", [BAD_DIM_GRID_HIGH, BAD_DIM_GRID_LOW, BAD_DIM_GRID_ODD]
+    "test_input_grid_dim", [BAD_DIM_HIGH, BAD_DIM_LOW, BAD_DIM_ODD]
 )
 def test_bad_grid_dim(test_input_grid_dim) -> None:
     """check if expected crash regarding inputed grid having dimensions outside limits defined in the config file"""

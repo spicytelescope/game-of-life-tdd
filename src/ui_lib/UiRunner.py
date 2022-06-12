@@ -30,6 +30,7 @@ class UIRunner:
         self.grid_dim: List[int] = (
             grid_dim if grid_dim is not None else self._config["videoSettings"]["res"]
         )
+        self.validateUiParams()
 
     def validateUiParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
