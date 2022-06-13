@@ -1,11 +1,12 @@
 """UiRunner class definition
 """
+# pylint: disable=too-many-arguments
 from typing import Dict, List, Union
 import numpy as np
 import pygame
 from src.ui_lib.DisplayPanel import DisplayPanel
 from src.ui_lib.InfoPanel import InfoPanel
-from src.ui_lib.SettingPanel import SettingPanel
+from src.ui_lib.ButtonPanel import ButtonPanel
 from src.utils.confUtils import fetch_game_config
 
 
@@ -16,6 +17,10 @@ class UIRunner:
         self,
         res: Union[List[int], None] = None,
         grid_dim: Union[List[int], None] = None,
+        font: Union[str, None] = None,
+        background_color: Union[List[int], None] = None,
+        cell_color: Union[List[int], None] = None,
+        text_color: Union[List[int], None] = None,
     ) -> None:
 
         # parameters
@@ -24,20 +29,30 @@ class UIRunner:
             "res": res if res is not None else self._config["videoSettings"]["res"],
             "grid_dim": grid_dim
             if grid_dim is not None
-            else self._config["videoSettings"]["res"],
+            else self._config["videoSettings"]["grid_dim"],
+            "font": font if font is not None else self._config["ui"]["font"],
+            "background_color": background_color
+            if background_color is not None
+            else self._config["ui"]["background_color"],
+            "cell_color": cell_color
+            if cell_color is not None
+            else self._config["ui"]["cell_color"],
+            "text_color": text_color
+            if text_color is not None
+            else self._config["ui"]["text_color"],
         }
         self.validateUIParams()
 
         # main window
         pygame.display.init()
         self.main_window: pygame.surface.Surface = pygame.display.set_mode(
-            self.videoSettings["res"]
+            self.videoSettings["res"]  # type: ignore
         )
 
         # ui elements
         self.display_panel: DisplayPanel = DisplayPanel()
-        self.setting_panel: SettingPanel = SettingPanel()
-        self.info_panel: InfoPanel = InfoPanel()
+        self.setting_panel: ButtonPanel = ButtonPanel()
+        self.info_panel: InfoPanel = InfoPanel(font=str(self.videoSettings["font"]))
         self.panel_blit_points: Dict = {
             "display": [0, 0],
             "setting": [0, 0],
@@ -149,6 +164,16 @@ class UIRunner:
                 )
             ]
         ), f"res ({self.videoSettings['res']}) should be between {self._config['videoSettings']['res_min']} and {self._config['videoSettings']['res_max']}"
+
+        assert (
+            self.videoSettings["font"] in pygame.font.get_fonts()
+        ), f"Unknown {self.videoSettings['font']} (pygame.font.get_fonts() to know the available ones)"
+
+        for test_color_name in ["background_color", "cell_color", "text_color"]:
+            assert (
+                (np.array(self.videoSettings[test_color_name]) >= 0)
+                & (np.array(self.videoSettings[test_color_name]) <= 255)
+            ).all(), f"{test_color_name} ({self.videoSettings[test_color_name]}) have pixel value not between 0 and 255"
 
 
 if __name__ == "__main__":

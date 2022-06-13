@@ -1,11 +1,11 @@
-"""SettingPanel class definition
+"""ButtonPanel class definition
 """
 
 from typing import List, Union
 import pygame
 
 
-class SettingPanel:
+class ButtonPanel:
     """_summary_"""
 
     def __init__(self, size: Union[List[int], None] = None):
@@ -28,4 +28,4 @@ class SettingPanel:
 
         self.surface = pygame.surface.Surface(size)
 
-    # TODO SettingPanel implementation
+    # TODO ButtonPanel implementation

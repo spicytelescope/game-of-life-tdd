@@ -11,6 +11,8 @@
   },
   "ui": {
     "background_color": [0, 0, 0],
-    "cell_color": [255, 255, 255]
+    "cell_color": [255, 255, 255],
+    "text_color": [255, 255, 255],
+    "font": "consolas"
   }
 }

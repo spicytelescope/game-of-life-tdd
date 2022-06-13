@@ -11,6 +11,10 @@ from tests.core_ui_tests.test_config import BAD_DIM_ODD
 from tests.core_ui_tests.test_config import BAD_RES_HIGH
 from tests.core_ui_tests.test_config import BAD_RES_LOW
 from tests.core_ui_tests.test_config import BAD_RES_ODD
+from tests.core_ui_tests.test_config import BAD_FONT
+from tests.core_ui_tests.test_config import BAD_BG_COLOR
+from tests.core_ui_tests.test_config import BAD_CELL_COLOR
+from tests.core_ui_tests.test_config import BAD_TEXT_COLOR
 
 
 @pytest.mark.parametrize(
@@ -29,3 +33,20 @@ def test_bad_res(test_input_res) -> None:
 
     with pytest.raises(AssertionError):
         ui_runner: UIRunner = UIRunner(res=test_input_res)
+
+
+def test_bad_font() -> None:
+    """check if a bad font raises expected error"""
+    with pytest.raises(AssertionError):
+        ui_runner: UIRunner = UIRunner(font=BAD_FONT)
+
+
+def test_bad_colors() -> None:
+    """check if a bad color for the background / cells raises expected error"""
+
+    with pytest.raises(AssertionError):
+        ui_runner: UIRunner = UIRunner(background_color=BAD_BG_COLOR)
+    with pytest.raises(AssertionError):
+        ui_runner: UIRunner = UIRunner(cell_color=BAD_CELL_COLOR)
+    with pytest.raises(AssertionError):
+        ui_runner: UIRunner = UIRunner(text_color=BAD_TEXT_COLOR)
