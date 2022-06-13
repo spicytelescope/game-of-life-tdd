@@ -16,7 +16,8 @@ class UIRunner:
         self,
         res: Union[List[int], None] = None,
         grid_dim: Union[List[int], None] = None,
-    ):
+    ) -> None:
+
         # parameters
         self._config = fetch_game_config()
         self.videoSettings: Dict = {
@@ -28,7 +29,10 @@ class UIRunner:
         self.validateUIParams()
 
         # main window
-        self.main_window: pygame.surface.Surface = pygame.surface.Surface((210, 210))
+        pygame.display.init()
+        self.main_window: pygame.surface.Surface = pygame.display.set_mode(
+            self.videoSettings["res"]
+        )
 
         # ui elements
         self.display_panel: DisplayPanel = DisplayPanel()
@@ -39,20 +43,78 @@ class UIRunner:
             "setting": [0, 0],
             "info": [0, 0],
         }
-        self._setBlitPoints()
-        print(dir(self))
+        self._initUIElements()
 
-    def _setBlitPoints(self):
-        """According to ui rules, each ui components as it's blit point depending on the resolution inputed"""
-        self.panel_blit_points["settings"] = [
+    def _initUIElements(self) -> None:
+        """According to ui rules, each ui components as it's blit point depending on the resolution inputed and its size, this function correctly set them for each ui comp"""
+
+        # blit points
+        self.panel_blit_points["setting"] = [
             int(0.7 * self.videoSettings["res"][0]),
             int(0.2 * self.videoSettings["res"][1]),
         ]
+        self.panel_blit_points["info"] = [
+            int(0.7 * self.videoSettings["res"][0]),
+            0,
+        ]
 
-    def draw(self):
+        # surface
+        self.display_panel.setSurface(
+            [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]]
+        )
+        self.setting_panel.setSurface(
+            [
+                int(0.3 * self.videoSettings["res"][0]),
+                int(0.8 * self.videoSettings["res"][1]),
+            ]
+        )
+        self.info_panel.setSurface(
+            [
+                int(0.3 * self.videoSettings["res"][0]),
+                int(0.2 * self.videoSettings["res"][1]),
+            ]
+        )
+
+    def __refreshComponents(self) -> None:
+        """make the info and display panels draw their provided and updated data for the turn done  :
+        - the display panel draws the new core grid internal state
+        - the info panel draw the metrics
+        """
+        self.setting_panel.update()
+        self.display_panel.update()
+        self.info_panel.update()
+
+    def _draw(self) -> None:
         """Draw each ui components on the main window"""
 
-        self.main_window.fill(self._config["ui"]["background_color"])
+        assert (
+            self.display_panel.surface is not None
+        ), "display panel has not been initialised yet"
+        assert (
+            self.setting_panel.surface is not None
+        ), "setting panel has not been initialised yet"
+        assert (
+            self.info_panel.surface is not None
+        ), "info panel has not been initialised yet"
+
+        print(self._config["ui"]["background_color"])
+        pygame.surface.Surface.fill(
+            self.main_window, tuple(self._config["ui"]["background_color"])
+        )
+
+        self.__refreshComponents()
+        self.main_window.blit(
+            self.display_panel.surface, self.panel_blit_points["display"]
+        )
+        self.main_window.blit(
+            self.setting_panel.surface, self.panel_blit_points["setting"]
+        )
+        self.main_window.blit(self.info_panel.surface, self.panel_blit_points["info"])
+
+    def updateTurn(self) -> None:
+        """update the main screen"""
+        self._draw()
+        pygame.display.flip()
 
     def validateUIParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
@@ -92,3 +154,6 @@ class UIRunner:
 if __name__ == "__main__":
 
     ui_runner: UIRunner = UIRunner()
+    while 1:
+
+        ui_runner.updateTurn()

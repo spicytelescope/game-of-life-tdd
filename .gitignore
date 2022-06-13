@@ -9,3 +9,4 @@ src/UNKNOWN.egg-info/*
 # venv
 
 .venv
+.venv_win

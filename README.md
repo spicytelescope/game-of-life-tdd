@@ -17,7 +17,7 @@ game-of-life-tdd/
 
 *NB -  Naming convention :*
 
-This project follows the naming conventing edited here : https://github.com/naming-convention/naming-convention-guides/tree/master/python
+This project follows the naming conventing edited here : https://github.com/naming-convention/naming-convention-guides/tree/master/python, except for the method of classes that will use the camelCase method, with internal ones using underscore notation.
 
 ## Installation
 

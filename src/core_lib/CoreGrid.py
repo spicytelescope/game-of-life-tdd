@@ -134,7 +134,7 @@ class CoreGrid:
         """
         return self.cell_mat
 
-    def setCell(self, i: int, j: int, value: GRID_CELL_STATE_TYPE):
+    def setCell(self, i: int, j: int, value: GRID_CELL_STATE_TYPE) -> None:
         """Set the cell of the grid to a value passed in
 
         Args:
@@ -149,6 +149,22 @@ class CoreGrid:
         """Reset the grid internal state (and it's previous state too)"""
         self.cell_mat = copy.deepcopy(self.initial_cell_mat)
         self.old_cell_mat = copy.deepcopy(self.initial_cell_mat)
+
+    def getAliveCellCount(self) -> int:
+        """return the number of alive cells in the grid
+
+        Returns:
+            int: number of alive cells in the grid
+        """
+        return sum(np.count_nonzero(row == ALIVE_CELL_STATE) for row in self.cell_mat)
+
+    def getDeadCellCount(self) -> int:
+        """return the number of dead cells in the grid
+
+        Returns:
+            int: number of dead cells in the grid
+        """
+        return sum(np.count_nonzero(row == DEAD_CELL_STATE) for row in self.cell_mat)
 
 
 if __name__ == "__main__":
