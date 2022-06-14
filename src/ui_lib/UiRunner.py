@@ -41,6 +41,7 @@ class UIRunner:
             "text_color": text_color
             if text_color is not None
             else self._config["ui"]["text_color"],
+            "font_size_ratio": 0.03125,  # determined by hand, purely aribitrary
         }
         self.validateUIParams()
 
@@ -53,7 +54,7 @@ class UIRunner:
 
         # ui elements
         self.display_panel: DisplayPanel = DisplayPanel()
-        self.setting_panel: ButtonPanel = ButtonPanel()
+        self.button_panel: ButtonPanel = ButtonPanel()
 
         self.panel_blit_points: Dict = {
             "display": [0, 0],
@@ -79,7 +80,7 @@ class UIRunner:
         self.display_panel.setSurface(
             [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]]
         )
-        self.setting_panel.setSurface(
+        self.button_panel.setSurface(
             [
                 int(0.3 * self.videoSettings["res"][0]),
                 int(0.8 * self.videoSettings["res"][1]),
@@ -91,6 +92,7 @@ class UIRunner:
                 int(0.3 * self.videoSettings["res"][0]),
                 int(0.2 * self.videoSettings["res"][1]),
             ],
+            self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"],
             font=str(self.videoSettings["font"]),
         )
 
@@ -99,7 +101,7 @@ class UIRunner:
         - the display panel draws the new core grid internal state
         - the info panel draw the metrics
         """
-        self.setting_panel.update()
+        self.button_panel.update()
         self.display_panel.update()
         self.info_panel.update()
 
@@ -110,7 +112,7 @@ class UIRunner:
             self.display_panel.surface is not None
         ), "display panel has not been initialised yet"
         assert (
-            self.setting_panel.surface is not None
+            self.button_panel.surface is not None
         ), "setting panel has not been initialised yet"
         assert (
             self.info_panel.surface is not None
@@ -125,14 +127,21 @@ class UIRunner:
             self.display_panel.surface, self.panel_blit_points["display"]
         )
         self.main_window.blit(
-            self.setting_panel.surface, self.panel_blit_points["setting"]
+            self.button_panel.surface, self.panel_blit_points["setting"]
         )
         self.main_window.blit(self.info_panel.surface, self.panel_blit_points["info"])
 
     def updateTurn(self) -> None:
         """update the main screen"""
+
         self._draw()
         pygame.display.flip()
+
+    def checkEvent(self) -> None:
+        """Check for any pygame event and custom event from the button panel"""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
 
     def validateUIParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
@@ -181,18 +190,9 @@ class UIRunner:
 
 if __name__ == "__main__":
 
-    import random
-
     ui_runner: UIRunner = UIRunner()
     ui_runner.info_panel.startTimer()
     turn = 0
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    turn += 1
-                    ui_runner.info_panel.setInfos(random.randint(1, 40), turn)
-
+        ui_runner.checkEvent()
         ui_runner.updateTurn()

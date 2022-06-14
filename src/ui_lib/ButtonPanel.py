@@ -1,6 +1,5 @@
 """ButtonPanel class definition
 """
-
 from typing import List, Union
 import pygame
 
@@ -17,7 +16,6 @@ class ButtonPanel:
         """_summary_"""
 
         assert self.surface is not None, "display panel has not been initialised yet"
-        self.surface.fill((0, 0, 255))
 
     def setSurface(self, size: List[int]) -> None:
         """set the surface of the class by passing a size
@@ -27,5 +25,3 @@ class ButtonPanel:
         """
 
         self.surface = pygame.surface.Surface(size)
-
-    # TODO ButtonPanel implementation

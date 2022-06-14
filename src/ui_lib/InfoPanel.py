@@ -1,6 +1,6 @@
 """InfoPanel class definition
 """
-# pylint: disable=dangerous-default-value
+# pylint: disable=dangerous-default-value,too-many-arguments
 from datetime import datetime
 from typing import Dict, List, Union
 import pygame
@@ -16,6 +16,7 @@ class InfoPanel:
     def __init__(
         self,
         size: List[int],
+        font_size: int,
         font: str = "consolas",
         text_color: List[int] = [0, 0, 0],
         background_color: List[int] = [255, 255, 255],
@@ -24,7 +25,7 @@ class InfoPanel:
         self.surface: pygame.surface.Surface = pygame.surface.Surface(size)
         self.infos: Dict = {"alive_cells": 0, "turn": 1}
         self.ui_settings = {
-            "font": pygame.font.SysFont(font, 15),
+            "font": pygame.font.SysFont(font, font_size),
             "text_color": text_color,
             "background_color": background_color,
         }
