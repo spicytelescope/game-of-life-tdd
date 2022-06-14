@@ -181,11 +181,18 @@ class UIRunner:
 
 if __name__ == "__main__":
 
+    import random
+
     ui_runner: UIRunner = UIRunner()
     ui_runner.info_panel.startTimer()
+    turn = 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    turn += 1
+                    ui_runner.info_panel.setInfos(random.randint(1, 40), turn)
 
         ui_runner.updateTurn()
