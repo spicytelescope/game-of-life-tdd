@@ -1,6 +1,7 @@
 """UiRunner class definition
 """
 # pylint: disable=too-many-arguments
+import sys
 from typing import Dict, List, Union
 import numpy as np
 import pygame
@@ -44,7 +45,8 @@ class UIRunner:
         self.validateUIParams()
 
         # main window
-        pygame.display.init()
+        pygame.init()
+        pygame.display.set_caption("Game of Life - Spicy Telescope Version")
         self.main_window: pygame.surface.Surface = pygame.display.set_mode(
             self.videoSettings["res"]  # type: ignore
         )
@@ -52,7 +54,7 @@ class UIRunner:
         # ui elements
         self.display_panel: DisplayPanel = DisplayPanel()
         self.setting_panel: ButtonPanel = ButtonPanel()
-        self.info_panel: InfoPanel = InfoPanel(font=str(self.videoSettings["font"]))
+
         self.panel_blit_points: Dict = {
             "display": [0, 0],
             "setting": [0, 0],
@@ -83,11 +85,13 @@ class UIRunner:
                 int(0.8 * self.videoSettings["res"][1]),
             ]
         )
-        self.info_panel.setSurface(
+
+        self.info_panel: InfoPanel = InfoPanel(
             [
                 int(0.3 * self.videoSettings["res"][0]),
                 int(0.2 * self.videoSettings["res"][1]),
-            ]
+            ],
+            font=str(self.videoSettings["font"]),
         )
 
     def __refreshComponents(self) -> None:
@@ -112,7 +116,6 @@ class UIRunner:
             self.info_panel.surface is not None
         ), "info panel has not been initialised yet"
 
-        print(self._config["ui"]["background_color"])
         pygame.surface.Surface.fill(
             self.main_window, tuple(self._config["ui"]["background_color"])
         )
@@ -179,6 +182,10 @@ class UIRunner:
 if __name__ == "__main__":
 
     ui_runner: UIRunner = UIRunner()
-    while 1:
+    ui_runner.info_panel.startTimer()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
 
         ui_runner.updateTurn()

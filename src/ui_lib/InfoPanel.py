@@ -1,5 +1,6 @@
 """InfoPanel class definition
 """
+# pylint: disable=dangerous-default-value
 from datetime import datetime
 from typing import Dict, List, Union
 import pygame
@@ -12,12 +13,21 @@ class InfoPanel:
     - the elapsed time
     """
 
-    def __init__(self, size: Union[List[int], None] = None, font: str = "consolas"):
-        self.surface: Union[pygame.surface.Surface, None] = (
-            pygame.surface.Surface(size) if size is not None else None
-        )
+    def __init__(
+        self,
+        size: List[int],
+        font: str = "consolas",
+        text_color: List[int] = [0, 0, 0],
+        background_color: List[int] = [255, 255, 255],
+    ):
+        self.size = size
+        self.surface: pygame.surface.Surface = pygame.surface.Surface(size)
         self.infos: Dict = {"alive_cells": 0, "turn": 1}
-        self.font: str = font
+        self.ui_settings = {
+            "font": pygame.font.SysFont(font, 15),
+            "text_color": text_color,
+            "background_color": background_color,
+        }
 
         # === timer ===
         self.timer_enabled: bool = False
@@ -28,12 +38,41 @@ class InfoPanel:
     def _draw(self) -> None:
         """draw the infos to the surface"""
 
+        self._refreshTimer()
+        assert (
+            self.surface is not None and self.size is not None
+        ), "info panel has not been initialised yet"
+
+        self.surface.fill(self.ui_settings["background_color"])
+        surfs = [
+            self.ui_settings["font"].render(
+                f"Alive cells : {self.infos['alive_cells']}",
+                True,
+                self.ui_settings["text_color"],
+            ),
+            self.ui_settings["font"].render(
+                f"Turn #{self.infos['turn']}", True, self.ui_settings["text_color"]
+            ),
+            self.ui_settings["font"].render(
+                f"Time : {self._getFormattedTime()}",
+                True,
+                self.ui_settings["text_color"],
+            ),
+        ]
+
+        for i in range(len(self.infos.keys()) + 1):
+            surf = surfs[i]
+            self.surface.blit(
+                surf,
+                surf.get_rect(
+                    center=[self.size[0] // 2, self.size[1] / 6 + i * self.size[1] / 3]  # type: ignore
+                ),
+            )
+
     def update(self) -> None:
         """draw the metrics from the UIRunner to the surface"""
 
-        assert self.surface is not None, "display panel has not been initialised yet"
         self._draw()
-        self.surface.fill((0, 255, 0))
 
     def setSurface(self, size: List[int]) -> None:
         """set the surface of the class by passing a size
@@ -41,7 +80,7 @@ class InfoPanel:
         Args:
             size (List[int]): the size of the surface
         """
-
+        self.size = size
         self.surface = pygame.surface.Surface(size)
 
     def _refreshTimer(self) -> None:
