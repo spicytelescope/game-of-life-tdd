@@ -54,11 +54,10 @@ class UIRunner:
 
         # ui elements
         self.display_panel: DisplayPanel = DisplayPanel()
-        self.button_panel: ButtonPanel = ButtonPanel()
 
         self.panel_blit_points: Dict = {
             "display": [0, 0],
-            "setting": [0, 0],
+            "button": [0, 0],
             "info": [0, 0],
         }
         self._initUIElements()
@@ -67,24 +66,18 @@ class UIRunner:
         """According to ui rules, each ui components as it's blit point depending on the resolution inputed and its size, this function correctly set them for each ui comp"""
 
         # blit points
-        self.panel_blit_points["setting"] = [
-            int(0.7 * self.videoSettings["res"][0]),
-            int(0.2 * self.videoSettings["res"][1]),
-        ]
         self.panel_blit_points["info"] = [
             int(0.7 * self.videoSettings["res"][0]),
             0,
+        ]
+        self.panel_blit_points["button"] = [
+            int(0.7 * self.videoSettings["res"][0]),
+            int(0.2 * self.videoSettings["res"][1]),
         ]
 
         # surface
         self.display_panel.setSurface(
             [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]]
-        )
-        self.button_panel.setSurface(
-            [
-                int(0.3 * self.videoSettings["res"][0]),
-                int(0.8 * self.videoSettings["res"][1]),
-            ]
         )
 
         self.info_panel: InfoPanel = InfoPanel(
@@ -92,8 +85,22 @@ class UIRunner:
                 int(0.3 * self.videoSettings["res"][0]),
                 int(0.2 * self.videoSettings["res"][1]),
             ],
-            self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"],
+            int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
             font=str(self.videoSettings["font"]),
+        )
+
+        self.button_panel: ButtonPanel = ButtonPanel(
+            [
+                int(0.3 * self.videoSettings["res"][0]),
+                int(0.8 * self.videoSettings["res"][1]),
+            ],
+            int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
+            {
+                "START": self.info_panel.startTimer,
+                "STOP": self.info_panel.stopTimer,
+                "RESET": self.info_panel.resetTimer,
+            },
+            str(self.videoSettings["font"]),
         )
 
     def __refreshComponents(self) -> None:
@@ -113,7 +120,7 @@ class UIRunner:
         ), "display panel has not been initialised yet"
         assert (
             self.button_panel.surface is not None
-        ), "setting panel has not been initialised yet"
+        ), "button panel has not been initialised yet"
         assert (
             self.info_panel.surface is not None
         ), "info panel has not been initialised yet"
@@ -127,7 +134,7 @@ class UIRunner:
             self.display_panel.surface, self.panel_blit_points["display"]
         )
         self.main_window.blit(
-            self.button_panel.surface, self.panel_blit_points["setting"]
+            self.button_panel.surface, self.panel_blit_points["button"]
         )
         self.main_window.blit(self.info_panel.surface, self.panel_blit_points["info"])
 
@@ -142,6 +149,16 @@ class UIRunner:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # button handling
+                self.button_panel.checkEvents(
+                    [
+                        mousePos - anchor
+                        for mousePos, anchor in zip(
+                            event.pos, self.panel_blit_points["button"]
+                        )
+                    ]
+                )
 
     def validateUIParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
@@ -191,7 +208,6 @@ class UIRunner:
 if __name__ == "__main__":
 
     ui_runner: UIRunner = UIRunner()
-    ui_runner.info_panel.startTimer()
     turn = 0
     while True:
         ui_runner.checkEvent()

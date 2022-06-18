@@ -1,8 +1,9 @@
 """UIButton class definition
 """
 
-# pylint: disable=dangerous-default-value,too-many-arguments
-from typing import List
+# pylint: disable=dangerous-default-value,too-many-arguments,too-many-instance-attributes
+import os
+from typing import Callable, Dict, List, Union
 import pygame
 
 
@@ -13,33 +14,36 @@ class UIButton:
         self,
         size: List[int],
         font_size: int,
+        label: str,
         text_color: List[int] = [0, 0, 0],
         font: str = "consolas",
-        label: str = "",
-        clickable=True,
+        clickable: bool = True,
+        callback: Union[None, Callable] = None,
     ):
 
-        self.size = size
+        self.size: List[int] = size
 
         # ui
-        self.ui_settings = {
-            "font": pygame.font.Font(font, font_size),
+        self.ui_settings: Dict = {
+            "font": pygame.font.SysFont(font, font_size),
             "label": label,
             "text_color": text_color,
         }
 
         # surface
+        script_path: str = os.path.dirname(os.path.abspath(__file__))
         self.UNPRESSED_BUTTON_SPRITE: pygame.surface.Surface = pygame.image.load(
-            "../../assets/unpressed_button_sprite.png"
+            f"{script_path}/../../assets/unpressed_button_sprite.png"
         )
         self.PRESSED_BUTTON_SPRITE: pygame.surface.Surface = pygame.image.load(
-            "../../assets/pressed_button_sprite.png"
+            f"{script_path}/../../assets/pressed_button_sprite.png"
         )
-        self.surface = pygame.surface.Surface(size)
+        self.surface: pygame.surface.Surface = pygame.surface.Surface(size)
 
         # event
-        self.clickable = clickable
-        self.clicked = False
+        self.clickable: bool = clickable
+        self.clicked: bool = False
+        self.callback: Union[None, Callable] = callback
 
     def draw(self) -> pygame.surface.Surface:
         """draw the button surface according to ui parameters and the full drawn surface to be used by parent classes"""
@@ -49,6 +53,9 @@ class UIButton:
             self.surface = pygame.transform.scale(
                 self.PRESSED_BUTTON_SPRITE, (self.size)
             )
+            self.clicked = False
+            if self.callback is not None:
+                self.callback()
         else:
             self.surface = pygame.transform.scale(
                 self.UNPRESSED_BUTTON_SPRITE, (self.size)
@@ -57,7 +64,21 @@ class UIButton:
         text_surf: pygame.surface.Surface = self.ui_settings["font"].render(
             self.ui_settings["label"], True, self.ui_settings["text_color"]
         )
+        alpha_img = pygame.surface.Surface(text_surf.get_size(), pygame.SRCALPHA)
+        alpha_img.fill((255, 255, 255, 255))
+        alpha_img.blit(text_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
         self.surface.blit(
-            text_surf, text_surf.get_rect(center=[self.size[0] // 2, self.size[1] // 2])
+            alpha_img, text_surf.get_rect(center=[self.size[0] // 2, self.size[1] // 2])
         )
+
+        self.clicked = False  # reset the click state after being drawn
         return self.surface
+
+    def setClickState(self, clickState: bool) -> None:
+        """set the click state
+
+        Args:
+            clickState (bool): pygame event object checked for the click
+        """
+        self.clicked = clickState

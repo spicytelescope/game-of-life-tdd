@@ -66,7 +66,7 @@ class InfoPanel:
             self.surface.blit(
                 surf,
                 surf.get_rect(
-                    center=[self.size[0] // 2, self.size[1] / 6 + i * self.size[1] / 3]  # type: ignore
+                    center=[self.size[0] // 2, self.size[1] // (len(surfs) * 2) + i * self.size[1] // len(surfs)]  # type: ignore
                 ),
             )
 
@@ -74,15 +74,6 @@ class InfoPanel:
         """draw the metrics from the UIRunner to the surface"""
 
         self._draw()
-
-    def setSurface(self, size: List[int]) -> None:
-        """set the surface of the class by passing a size
-
-        Args:
-            size (List[int]): the size of the surface
-        """
-        self.size = size
-        self.surface = pygame.surface.Surface(size)
 
     def _refreshTimer(self) -> None:
         """refresh the timer"""
@@ -117,13 +108,15 @@ class InfoPanel:
         Returns:
             str: the formatted string following this format : %H:%m:%s
         """
-        assert (
-            self.elapsed_seconds is not None
-        ), "Cannot format time because self.elapsed_seconds is None"
+        num_hour: int = 0
+        num_min: int = 0
+        remaining_sec: int = 0
 
-        num_hour: int = self.elapsed_seconds // 3600
-        num_min: int = (self.elapsed_seconds - 3600 * num_hour) // 60
-        remaining_sec: int = self.elapsed_seconds - 3600 * num_hour - 60 * num_min
+        if self.elapsed_seconds is not None:
+            num_hour = self.elapsed_seconds // 3600
+            num_min = (self.elapsed_seconds - 3600 * num_hour) // 60
+            remaining_sec = self.elapsed_seconds - 3600 * num_hour - 60 * num_min
+
         return f"{'0' if num_hour < 10 else ''}{num_hour}:{'0' if num_min < 10 else ''}{num_min}:{'0' if remaining_sec < 10 else ''}{remaining_sec}"
 
     def setInfos(self, alive_cells_number: int, turn_number: int) -> None:
