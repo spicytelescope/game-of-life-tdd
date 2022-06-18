@@ -34,10 +34,10 @@ class UIButton:
         script_path: str = os.path.dirname(os.path.abspath(__file__))
         self.UNPRESSED_BUTTON_SPRITE: pygame.surface.Surface = pygame.image.load(
             f"{script_path}/../../assets/unpressed_button_sprite.png"
-        )
+        ).convert_alpha()
         self.PRESSED_BUTTON_SPRITE: pygame.surface.Surface = pygame.image.load(
             f"{script_path}/../../assets/pressed_button_sprite.png"
-        )
+        ).convert_alpha()
         self.surface: pygame.surface.Surface = pygame.surface.Surface(size)
 
         # event
@@ -64,12 +64,8 @@ class UIButton:
         text_surf: pygame.surface.Surface = self.ui_settings["font"].render(
             self.ui_settings["label"], True, self.ui_settings["text_color"]
         )
-        alpha_img = pygame.surface.Surface(text_surf.get_size(), pygame.SRCALPHA)
-        alpha_img.fill((255, 255, 255, 255))
-        alpha_img.blit(text_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-
         self.surface.blit(
-            alpha_img, text_surf.get_rect(center=[self.size[0] // 2, self.size[1] // 2])
+            text_surf, text_surf.get_rect(center=[self.size[0] // 2, self.size[1] // 2])
         )
 
         self.clicked = False  # reset the click state after being drawn
