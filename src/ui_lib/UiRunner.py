@@ -21,6 +21,7 @@ class UIRunner:
         font: Union[str, None] = None,
         background_color: Union[List[int], None] = None,
         cell_color: Union[List[int], None] = None,
+        grid_color: Union[List[int], None] = None,
         text_color: Union[List[int], None] = None,
     ) -> None:
 
@@ -38,6 +39,9 @@ class UIRunner:
             "cell_color": cell_color
             if cell_color is not None
             else self._config["ui"]["cell_color"],
+            "grid_color": grid_color
+            if grid_color is not None
+            else self._config["ui"]["grid_color"],
             "text_color": text_color
             if text_color is not None
             else self._config["ui"]["text_color"],
@@ -53,8 +57,6 @@ class UIRunner:
         )
 
         # ui elements
-        self.display_panel: DisplayPanel = DisplayPanel()
-
         self.panel_blit_points: Dict = {
             "display": [0, 0],
             "button": [0, 0],
@@ -74,11 +76,6 @@ class UIRunner:
             int(0.7 * self.videoSettings["res"][0]),
             int(0.2 * self.videoSettings["res"][1]),
         ]
-
-        # surface
-        self.display_panel.setSurface(
-            [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]]
-        )
 
         self.info_panel: InfoPanel = InfoPanel(
             [
@@ -103,6 +100,14 @@ class UIRunner:
             str(self.videoSettings["font"]),
         )
 
+        self.display_panel: DisplayPanel = DisplayPanel(
+            [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]],
+            self.videoSettings["grid_dim"],
+            int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
+            {"refresh_screen": self.draw, "update_cell_mat": lambda: None},
+            cell_color=self.videoSettings["cell_color"],
+        )
+
     def __refreshComponents(self) -> None:
         """make the info and display panels draw their provided and updated data for the turn done  :
         - the display panel draws the new core grid internal state
@@ -112,7 +117,7 @@ class UIRunner:
         self.display_panel.update()
         self.info_panel.update()
 
-    def _draw(self) -> None:
+    def draw(self) -> None:
         """Draw each ui components on the main window"""
 
         assert (
@@ -141,7 +146,7 @@ class UIRunner:
     def updateTurn(self) -> None:
         """update the main screen"""
 
-        self._draw()
+        self.draw()
         pygame.display.flip()
 
     def checkEvent(self) -> None:
@@ -208,6 +213,8 @@ class UIRunner:
 if __name__ == "__main__":
 
     ui_runner: UIRunner = UIRunner()
+    ui_runner.updateTurn()
+    ui_runner.display_panel.runEditMode()
     turn = 0
     while True:
         ui_runner.checkEvent()

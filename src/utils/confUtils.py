@@ -13,7 +13,7 @@ REQUIRED_CONF_FIELDS: Dict = {
         "min_grid_dim",
     ],
     "simulation": ["turn_timeout"],
-    "ui": ["background_color", "cell_color"],
+    "ui": ["background_color", "cell_color", "grid_color", "text_color", "font"],
 }
 
 

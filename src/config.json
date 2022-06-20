@@ -3,7 +3,7 @@
     "res": [720, 480],
     "res_max": [3840, 2160],
     "res_min": [200, 100],
-    "grid_dim": [50, 50],
+    "grid_dim": [24, 24],
     "min_grid_dim": [6, 6]
   },
   "simulation": {
@@ -11,7 +11,8 @@
   },
   "ui": {
     "background_color": [0, 0, 0],
-    "cell_color": [255, 255, 255],
+    "cell_color": [255, 0, 0],
+    "grid_color": [255, 255, 255],
     "text_color": [0, 0, 0],
     "font": "consolas"
   }
