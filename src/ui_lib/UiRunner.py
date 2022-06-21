@@ -1,6 +1,6 @@
 """UiRunner class definition
 """
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-instance-attributes,dangerous-default-value
 import sys
 from typing import Dict, List, Union
 import numpy as np
@@ -16,6 +16,12 @@ class UIRunner:
 
     def __init__(
         self,
+        gameConfig: Dict,
+        gameCallbacks: Dict = {
+            "START": lambda: None,
+            "STOP": lambda: None,
+            "RESET": lambda: None,
+        },
         res: Union[List[int], None] = None,
         grid_dim: Union[List[int], None] = None,
         font: Union[str, None] = None,
@@ -26,35 +32,39 @@ class UIRunner:
     ) -> None:
 
         # parameters
-        self._config = fetch_game_config()
+        self.gameConfig: Dict = gameConfig
         self.videoSettings: Dict = {
-            "res": res if res is not None else self._config["videoSettings"]["res"],
+            "res": res if res is not None else self.gameConfig["videoSettings"]["res"],
             "grid_dim": grid_dim
             if grid_dim is not None
-            else self._config["videoSettings"]["grid_dim"],
-            "font": font if font is not None else self._config["ui"]["font"],
+            else self.gameConfig["videoSettings"]["grid_dim"],
+            "font": font if font is not None else self.gameConfig["ui"]["font"],
             "background_color": background_color
             if background_color is not None
-            else self._config["ui"]["background_color"],
+            else self.gameConfig["ui"]["background_color"],
             "cell_color": cell_color
             if cell_color is not None
-            else self._config["ui"]["cell_color"],
+            else self.gameConfig["ui"]["cell_color"],
             "grid_color": grid_color
             if grid_color is not None
-            else self._config["ui"]["grid_color"],
+            else self.gameConfig["ui"]["grid_color"],
             "text_color": text_color
             if text_color is not None
-            else self._config["ui"]["text_color"],
+            else self.gameConfig["ui"]["text_color"],
             "font_size_ratio": 0.03125,  # determined by hand, purely aribitrary
         }
         self.validateUIParams()
 
         # main window
         pygame.init()
+        self.graphicClock: pygame.time.Clock = pygame.time.Clock()
         pygame.display.set_caption("Game of Life - Spicy Telescope Version")
         self.main_window: pygame.surface.Surface = pygame.display.set_mode(
             self.videoSettings["res"]  # type: ignore
         )
+
+        # interactions
+        self.gameCallbacks = gameCallbacks
 
         # ui elements
         self.panel_blit_points: Dict = {
@@ -86,25 +96,32 @@ class UIRunner:
             font=str(self.videoSettings["font"]),
         )
 
+        # {
+        #         "START": self.info_panel.startTimer,
+        #         "STOP": self.info_panel.stopTimer,
+        #         "RESET": self.info_panel.resetTimer,
+        # }
         self.button_panel: ButtonPanel = ButtonPanel(
             [
                 int(0.3 * self.videoSettings["res"][0]),
                 int(0.8 * self.videoSettings["res"][1]),
             ],
             int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
-            {
-                "START": self.info_panel.startTimer,
-                "STOP": self.info_panel.stopTimer,
-                "RESET": self.info_panel.resetTimer,
-            },
+            self.gameCallbacks,
             str(self.videoSettings["font"]),
         )
+
+        # def setUnclickButtonPostEdit:
+        #     self.button_panel.buttons["START"]
 
         self.display_panel: DisplayPanel = DisplayPanel(
             [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]],
             self.videoSettings["grid_dim"],
             int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
-            {"refresh_screen": self.draw, "update_cell_mat": lambda: None},
+            {
+                "refresh_screen": self.draw,
+                # "set_button_post_edit": setUnclickButtonPostEdit,
+            },
             cell_color=self.videoSettings["cell_color"],
         )
 
@@ -131,7 +148,7 @@ class UIRunner:
         ), "info panel has not been initialised yet"
 
         pygame.surface.Surface.fill(
-            self.main_window, tuple(self._config["ui"]["background_color"])
+            self.main_window, tuple(self.gameConfig["ui"]["background_color"])
         )
 
         self.__refreshComponents()
@@ -148,6 +165,7 @@ class UIRunner:
 
         self.draw()
         pygame.display.flip()
+        # self.graphicClock.tick(self.gameConfig["videoSettings"]["framerate"])
 
     def checkEvent(self) -> None:
         """Check for any pygame event and custom event from the button panel"""
@@ -155,7 +173,6 @@ class UIRunner:
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print("clicked !!!")
                 # button handling
                 self.button_panel.checkEvents(
                     [
@@ -166,11 +183,18 @@ class UIRunner:
                     ]
                 )
 
-    def runEditMode(self) -> None:
-        """Handle the edit mode"""
-        ui_runner.info_panel.setEditMode(True)
-        ui_runner.display_panel.runEditMode()
-        ui_runner.info_panel.setEditMode(False)
+    def runEditMode(self) -> np.ndarray:
+        """Handle the edit mode
+
+        Returns:
+            np.ndarray: the default cell matrix state for the game
+        """
+        self.update()
+        self.info_panel.setEditMode(True)
+        self.display_panel.runEditMode()
+        self.info_panel.setEditMode(False)
+
+        return self.display_panel.cell_mat
 
     def validateUIParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
@@ -184,12 +208,12 @@ class UIRunner:
             [
                 low <= x <= high
                 for low, x, high in zip(
-                    self._config["videoSettings"]["min_grid_dim"],
+                    self.gameConfig["videoSettings"]["min_grid_dim"],
                     self.videoSettings["grid_dim"],
-                    self._config["videoSettings"]["res"],
+                    self.gameConfig["videoSettings"]["res"],
                 )
             ]
-        ), f"grid_dim ({self.videoSettings['grid_dim']}) should be between {self._config['videoSettings']['min_grid_dim']} and {self._config['videoSettings']['res']}"
+        ), f"grid_dim ({self.videoSettings['grid_dim']}) should be between {self.gameConfig['videoSettings']['min_grid_dim']} and {self.gameConfig['videoSettings']['res']}"
 
         assert (
             np.array(self.videoSettings["res"]) % 2 == 0
@@ -199,12 +223,12 @@ class UIRunner:
             [
                 low <= x <= high
                 for low, x, high in zip(
-                    self._config["videoSettings"]["res_min"],
+                    self.gameConfig["videoSettings"]["res_min"],
                     self.videoSettings["res"],
-                    self._config["videoSettings"]["res_max"],
+                    self.gameConfig["videoSettings"]["res_max"],
                 )
             ]
-        ), f"res ({self.videoSettings['res']}) should be between {self._config['videoSettings']['res_min']} and {self._config['videoSettings']['res_max']}"
+        ), f"res ({self.videoSettings['res']}) should be between {self.gameConfig['videoSettings']['res_min']} and {self.gameConfig['videoSettings']['res_max']}"
 
         assert (
             self.videoSettings["font"] in pygame.font.get_fonts()
@@ -219,7 +243,7 @@ class UIRunner:
 
 if __name__ == "__main__":
 
-    ui_runner: UIRunner = UIRunner()
+    ui_runner: UIRunner = UIRunner(fetch_game_config())
     ui_runner.update()
     ui_runner.runEditMode()
     turn = 0

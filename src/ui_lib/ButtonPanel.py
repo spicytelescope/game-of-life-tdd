@@ -29,6 +29,9 @@ class ButtonPanel:
         # components
         self.labels: List[str] = ["START", "STOP", "RESET"]
         self.callbacks: Dict = callbacks
+        assert all(
+            label in callbacks.keys() for label in self.labels
+        ), f"the following labels must be specified as key in the callbacks : {(' ').join(self.labels)}"
         self.buttons: List[UIButton] = [
             UIButton(
                 [self.size[0] // 2, self.size[1] // (len(self.labels) * 2)],

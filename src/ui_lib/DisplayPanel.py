@@ -7,7 +7,7 @@ import sys
 from typing import Dict, List
 import numpy as np
 import pygame
-from src.utils.CustomTypes import ALIVE_CELL_STATE
+from src.utils.CustomTypes import ALIVE_CELL_STATE, DEAD_CELL_STATE
 
 
 class DisplayPanel:
@@ -55,6 +55,14 @@ class DisplayPanel:
         assert self.surface is not None, "display panel has not been initialised yet"
         self.surface.fill(self.ui_settings["background_color"])
         self._draw()
+
+    def setCellMat(self, new_cell_mat: np.ndarray) -> None:
+        """set the cell mat, this function is called each time a new state of the internal grid is coming and needs to be displayed
+
+        Args:
+            new_cell_mat (np.ndarray): the new cell mat
+        """
+        self.cell_mat = new_cell_mat
 
     def _draw(self) -> None:
         """draw the interal core grid state to the surface, according to the ui colors inputed"""
@@ -104,9 +112,12 @@ class DisplayPanel:
                     cell_coor_selected = [
                         event.pos[x] // self.CELL_SHAPE[x] for x in [0, 1]
                     ]
-                    self.cell_mat[cell_coor_selected[1]][
-                        cell_coor_selected[0]
-                    ] = ALIVE_CELL_STATE
+                    self.cell_mat[cell_coor_selected[1]][cell_coor_selected[0]] = (
+                        ALIVE_CELL_STATE
+                        if self.cell_mat[cell_coor_selected[1]][cell_coor_selected[0]]
+                        == DEAD_CELL_STATE
+                        else DEAD_CELL_STATE
+                    )
 
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     edit_mode_running = False
@@ -116,3 +127,6 @@ class DisplayPanel:
             self.editModeCallbacks["refresh_screen"]()
             self._draw()
             pygame.display.flip()
+
+        # make the other button unclickable so that the user can juste start the simulation
+        # self.editModeCallbacks["set_button_post_edit"]()

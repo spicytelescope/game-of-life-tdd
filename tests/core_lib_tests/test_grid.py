@@ -44,7 +44,7 @@ def mock_config_file_handler():
 def test_core_behaviour() -> None:
     """checking good behaviour of the core functions and more precisely the 3 core rules of the game after n turns"""
 
-    grid: CoreGrid = CoreGrid(NORMAL_INIT_GRID)
+    grid: CoreGrid = CoreGrid(fetch_game_config(), NORMAL_INIT_GRID)
     for _ in range(NORMAL_N_TURN):
         grid.applyRules()
 
@@ -58,7 +58,7 @@ def test_load_core_behaviour() -> None:
 
     """checking core grid behaviour with a huge number of turn"""
 
-    grid: CoreGrid = CoreGrid(LOAD_TEST_INIT_GRID)
+    grid: CoreGrid = CoreGrid(fetch_game_config(), LOAD_TEST_INIT_GRID)
 
     for _ in range(LOAD_TEST_N_TURN):
         grid.applyRules()
@@ -75,19 +75,19 @@ def test_bad_grid_dim(test_input_grid_dim) -> None:
     """check if expected crash regarding inputed grid having dimensions outside limits defined in the config file"""
 
     with pytest.raises(AssertionError):
-        grid: CoreGrid = CoreGrid(test_input_grid_dim)
+        grid: CoreGrid = CoreGrid(fetch_game_config(), test_input_grid_dim)
 
 
 def test_incorrect_grid_init() -> None:
     """check if expected crash regarding incorrect values (e.g. not 1 or 0) when initialising grid"""
     with pytest.raises(AssertionError):
-        grid: CoreGrid = CoreGrid(INCORRECT_INIT_GRID)
+        grid: CoreGrid = CoreGrid(fetch_game_config(), INCORRECT_INIT_GRID)
 
 
 def test_no_living_cells() -> None:
     """create a mock result that is expected not to yield out living cells"""
 
-    grid: CoreGrid = CoreGrid(NO_LIVING_INIT_GRID)
+    grid: CoreGrid = CoreGrid(fetch_game_config(), NO_LIVING_INIT_GRID)
     grid.applyRules()
 
     assert_array_equal(
@@ -101,7 +101,7 @@ def test_incorrect_set_cell() -> None:
     """checking if trying to add incorrect value (e.g. not in 0 or 1 to the grid using setCell method raise error) raise expected error"""
 
     with pytest.raises(AssertionError):
-        grid: CoreGrid = CoreGrid(NORMAL_INIT_GRID)
+        grid: CoreGrid = CoreGrid(fetch_game_config(), NORMAL_INIT_GRID)
         grid.setCell(0, 0, INCORRECT_VALUE_SET_CELL)  # type: ignore
 
 

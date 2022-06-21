@@ -15,15 +15,16 @@ from src.utils.CustomTypes import GRID_CELL_STATE_TYPE
 class CoreGrid:
     """Handle the main grid which keep tracks of the current state of the game's cells, core functions for the grid processing"""
 
-    def __init__(self, default_cell_mat: np.ndarray):
+    def __init__(self, gameConfig: Dict, default_cell_mat: np.ndarray):
 
         self._turn = 0
 
-        self.initial_cell_mat: np.ndarray = default_cell_mat  # used for resetCellmat()
-        self.cell_mat: np.ndarray = default_cell_mat
-        self.old_cell_mat: np.ndarray = default_cell_mat
+        self.initial_cell_mat: np.ndarray = np.array([[]])
+        self.old_cell_mat: np.ndarray = np.array([[]])
+        self.cell_mat: np.ndarray = np.array([[]])
+        self.initCellMat(default_cell_mat)
         self.grid_dim: _Shape = default_cell_mat.shape
-        self.gameConfig: Dict = fetch_game_config()["videoSettings"]
+        self.gameConfig: Dict = gameConfig
         self.validateGrid()
 
     def prettyPrintCellMat(self, tabulate_fmt="grid") -> None:
@@ -113,12 +114,12 @@ class CoreGrid:
             [
                 low <= x <= high
                 for low, x, high in zip(
-                    self.gameConfig["min_grid_dim"],
+                    self.gameConfig["videoSettings"]["min_grid_dim"],
                     self.grid_dim,
-                    self.gameConfig["res"],
+                    self.gameConfig["videoSettings"]["res"],
                 )
             ]
-        ), f"grid_dim ({self.grid_dim}) should be between {self.gameConfig['min_grid_dim']} and {self.gameConfig['res']}"
+        ), f"grid_dim ({self.grid_dim}) should be between {self.gameConfig['videoSettings']['min_grid_dim']} and {self.gameConfig['videoSettings']['res']}"
 
         assert (
             (self.cell_mat == DEAD_CELL_STATE) | (self.cell_mat == ALIVE_CELL_STATE)
@@ -150,6 +151,16 @@ class CoreGrid:
         self.cell_mat = copy.deepcopy(self.initial_cell_mat)
         self.old_cell_mat = copy.deepcopy(self.initial_cell_mat)
 
+    def initCellMat(self, new_cell_mat: np.ndarray) -> None:
+        """set the old and new cell mat to a completely new cell matrix passed in, used mainly when the grid is reset, to start over
+
+        Args:
+            new_cell_mat (np.ndarray): the new cell matrix
+        """
+        self.initial_cell_mat = copy.deepcopy(new_cell_mat)
+        self.cell_mat = copy.deepcopy(new_cell_mat)
+        self.old_cell_mat = copy.deepcopy(new_cell_mat)
+
     def getAliveCellCount(self) -> int:
         """return the number of alive cells in the grid
 
@@ -169,5 +180,5 @@ class CoreGrid:
 
 if __name__ == "__main__":
 
-    grid: CoreGrid = CoreGrid(np.zeros((24, 24)))
+    grid: CoreGrid = CoreGrid(fetch_game_config(), np.zeros((24, 24)))
     grid.prettyPrintCellMat()
