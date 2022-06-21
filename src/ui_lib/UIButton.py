@@ -4,6 +4,7 @@
 # pylint: disable=dangerous-default-value,too-many-arguments,too-many-instance-attributes
 import os
 from typing import Callable, Dict, List, Union
+from datetime import datetime
 import pygame
 
 
@@ -39,23 +40,31 @@ class UIButton:
             f"{script_path}/../../assets/pressed_button_sprite.png"
         ).convert_alpha()
         self.surface: pygame.surface.Surface = pygame.surface.Surface(size)
+        self.clickTimeoutTimer: datetime = datetime.now()
 
         # event
         self.clickable: bool = clickable
         self.clicked: bool = False
         self.callback: Union[None, Callable] = callback
+        self.callback_available: bool = True
 
     def draw(self) -> pygame.surface.Surface:
         """draw the button surface according to ui parameters and the full drawn surface to be used by parent classes"""
 
-        self.surface = pygame.surface.Surface(self.size)
         if self.clickable and self.clicked:
+            # exectuing callback once after the click
+            if self.callback is not None and self.callback_available:
+                self.callback()
+                self.callback_available = False
+
             self.surface = pygame.transform.scale(
                 self.PRESSED_BUTTON_SPRITE, (self.size)
             )
-            self.clicked = False
-            if self.callback is not None:
-                self.callback()
+
+            if (datetime.now() - self.clickTimeoutTimer).total_seconds() > 1:
+                self.clicked = False
+                self.callback_available = True
+
         else:
             self.surface = pygame.transform.scale(
                 self.UNPRESSED_BUTTON_SPRITE, (self.size)
@@ -68,7 +77,6 @@ class UIButton:
             text_surf, text_surf.get_rect(center=[self.size[0] // 2, self.size[1] // 2])
         )
 
-        self.clicked = False  # reset the click state after being drawn
         return self.surface
 
     def setClickState(self, clickState: bool) -> None:
@@ -77,4 +85,8 @@ class UIButton:
         Args:
             clickState (bool): pygame event object checked for the click
         """
+        # start the timer
+        if clickState and not self.clicked:
+            self.clickTimeoutTimer = datetime.now()
+
         self.clicked = clickState

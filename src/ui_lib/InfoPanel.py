@@ -1,6 +1,6 @@
 """InfoPanel class definition
 """
-# pylint: disable=dangerous-default-value,too-many-arguments
+# pylint: disable=dangerous-default-value,too-many-arguments,too-many-instance-attributes
 from datetime import datetime
 from typing import Dict, List, Union
 import pygame
@@ -36,6 +36,21 @@ class InfoPanel:
         self.timer: Union[None, datetime] = None
         self.elapsed_seconds: Union[None, int] = None
 
+        # edit mode
+        self.displayEditMode: bool = False
+        self.edit_mode_text_surfs: List[pygame.surface.Surface] = [
+            self.ui_settings["font"].render(
+                text,
+                True,
+                self.ui_settings["text_color"],
+            )
+            for text in [
+                "Edit mode running,",
+                "press [ENTER] to start",
+                "the simulation",
+            ]
+        ]
+
     def _draw(self) -> None:
         """draw the infos to the surface"""
 
@@ -61,14 +76,27 @@ class InfoPanel:
             ),
         ]
 
-        for i in range(len(self.infos.keys()) + 1):
-            surf = surfs[i]
-            self.surface.blit(
-                surf,
-                surf.get_rect(
-                    center=[self.size[0] // 2, self.size[1] // (len(surfs) * 2) + i * self.size[1] // len(surfs)]  # type: ignore
-                ),
-            )
+        if self.displayEditMode:
+            for i, text_surf in enumerate(self.edit_mode_text_surfs):
+                self.surface.blit(
+                    text_surf,
+                    text_surf.get_rect(
+                        center=[
+                            self.size[0] // 2,
+                            self.size[1] // (len(self.edit_mode_text_surfs) * 2)
+                            + i * (self.size[1] // len(self.edit_mode_text_surfs)),
+                        ]
+                    ),
+                )
+        else:
+            for i in range(len(self.infos.keys()) + 1):
+                surf = surfs[i]
+                self.surface.blit(
+                    surf,
+                    surf.get_rect(
+                        center=[self.size[0] // 2, self.size[1] // (len(surfs) * 2) + i * self.size[1] // len(surfs)]  # type: ignore
+                    ),
+                )
 
     def update(self) -> None:
         """draw the metrics from the UIRunner to the surface"""
@@ -129,3 +157,11 @@ class InfoPanel:
 
         self.infos["alive_cells"] = alive_cells_number
         self.infos["turn"] = turn_number
+
+    def setEditMode(self, state: bool) -> None:
+        """set the state of the displayEditMode flag
+
+        Args:
+            state (bool): value to set the flag
+        """
+        self.displayEditMode = state

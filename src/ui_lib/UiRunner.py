@@ -143,7 +143,7 @@ class UIRunner:
         )
         self.main_window.blit(self.info_panel.surface, self.panel_blit_points["info"])
 
-    def updateTurn(self) -> None:
+    def update(self) -> None:
         """update the main screen"""
 
         self.draw()
@@ -155,6 +155,7 @@ class UIRunner:
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                print("clicked !!!")
                 # button handling
                 self.button_panel.checkEvents(
                     [
@@ -164,6 +165,12 @@ class UIRunner:
                         )
                     ]
                 )
+
+    def runEditMode(self) -> None:
+        """Handle the edit mode"""
+        ui_runner.info_panel.setEditMode(True)
+        ui_runner.display_panel.runEditMode()
+        ui_runner.info_panel.setEditMode(False)
 
     def validateUIParams(self) -> None:
         """Make sure that the grid has authorized dimensions in regards to the resolution of the UI, and correct values for the cells too, make sure that the res has values within limits, and on the right type"""
@@ -213,9 +220,10 @@ class UIRunner:
 if __name__ == "__main__":
 
     ui_runner: UIRunner = UIRunner()
-    ui_runner.updateTurn()
-    ui_runner.display_panel.runEditMode()
+    ui_runner.update()
+    ui_runner.runEditMode()
     turn = 0
+
     while True:
         ui_runner.checkEvent()
-        ui_runner.updateTurn()
+        ui_runner.update()

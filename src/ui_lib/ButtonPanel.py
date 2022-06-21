@@ -78,7 +78,7 @@ class ButtonPanel:
             )
 
     def checkEvents(self, clickPos: List[float]) -> None:
-        """Update the click state of each button according to the event captured
+        """Update the click state of each button according to the pos of the cursor
 
         Args:
             event (pygame.event.Event): pygame event object checked for the click

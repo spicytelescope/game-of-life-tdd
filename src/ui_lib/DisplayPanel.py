@@ -3,6 +3,7 @@
 # pylint: disable=dangerous-default-value,too-many-arguments
 
 from math import ceil
+import sys
 from typing import Dict, List
 import numpy as np
 import pygame
@@ -109,6 +110,8 @@ class DisplayPanel:
 
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     edit_mode_running = False
+                elif event.type == pygame.QUIT:
+                    sys.exit()
 
             self.editModeCallbacks["refresh_screen"]()
             self._draw()
