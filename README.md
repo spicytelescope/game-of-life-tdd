@@ -56,3 +56,17 @@ Or, if you have a virtual environment :
 | `venv $YOUR_ENV_DIR && source $YOUR_ENV_DIR/Scripts/activate.ps1 && pip3 install -r requirements.txt` | `venv $YOUR_ENV_DIR && source $YOUR_ENV_DIR/bin/activate && pip3 install -r requirements.txt` |
 
 _Note that the project is cross-platform, and has been tested on Ubuntu20.04 and Windows10._
+
+## Usage
+
+The main project entry is the script `main.py` at the root. Just run it using your python interpreter and it should perfectly work.
+
+## Configuration
+
+The game is perfectly tweakable, and every parameters are in the `config.json` file, just edit a setting, save the file and run the `main.py` file again and the changes will be automatically loaded into the game.
+
+**WARNING : DO NOT REMOVE ANY FIELD OR THE GAME WON'T START (follow the error's message for further information**
+
+## Issues/Suggestions
+
+If any bugs are discovered, or if you've got any questions / feedback / suggestions, please contact me through one of my socials or make an issue/PR.
