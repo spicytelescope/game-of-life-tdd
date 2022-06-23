@@ -54,11 +54,11 @@ class UIButton:
     def draw(self) -> pygame.surface.Surface:
         """draw the button surface according to ui parameters and the full drawn surface to be used by parent classes"""
 
-        if not self.clickable:
+        if not self.clicked and not self.clickable:
             self.surface = pygame.transform.scale(
                 self.DISABLED_BUTTON_SPRITE, (self.size)
             )
-        elif self.clickable and self.clicked:
+        elif self.clicked:
             # exectuing callback once after the click
             if self.callback is not None and self.callback_available:
                 self.callback_available = False
@@ -68,13 +68,17 @@ class UIButton:
                 self.PRESSED_BUTTON_SPRITE, (self.size)
             )
 
-            if (datetime.now() - self.clickTimeoutTimer).total_seconds() * 1000 > 750:
-                self.clicked = False
-                self.callback_available = True
         else:
             self.surface = pygame.transform.scale(
                 self.UNPRESSED_BUTTON_SPRITE, (self.size)
             )
+
+        if (
+            self.clicked
+            and (datetime.now() - self.clickTimeoutTimer).total_seconds() * 1000 > 750
+        ):
+            self.clicked = False
+            self.callback_available = True
 
         text_surf: pygame.surface.Surface = self.ui_settings["font"].render(
             self.ui_settings["label"], True, self.ui_settings["text_color"]
@@ -101,7 +105,7 @@ class UIButton:
         """set the clickable state
 
         Args:
-            self (_type_): new clickable state
+            new_clickable_state (bool): new clickable state
         """
 
         self.clickable = new_clickable_state

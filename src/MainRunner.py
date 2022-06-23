@@ -89,20 +89,29 @@ class MainRunner:
 
         self.setSimulationState(True)
         self.ui_runner.info_panel.startTimer()
-        # self.ui_runner.button_panel.buttons["start"].setClickableState(False)
+        for button in list(self.ui_runner.button_panel.buttons.values()):
+            button.setClickableState(False) if button.ui_settings[
+                "label"
+            ] == "START" else button.setClickableState(True)
 
     def stopSimulation(self) -> None:
         """stop the simulation, by stopping the timer and setting the right simulation state"""
         self.setSimulationState(False)
         self.ui_runner.info_panel.stopTimer()
+        for button in list(self.ui_runner.button_panel.buttons.values()):
+            button.setClickableState(False) if button.ui_settings[
+                "label"
+            ] == "STOP" else button.setClickableState(True)
 
     def resetSimulation(self) -> None:
         """reset the simulation, by reseting the timer but also the cell mat to its original state in both the core grid AND the ui (display panel)
 
         Afterward, run the edit mode"""
         self.setSimulationState(False)
-        self.ui_runner.info_panel.resetTimer()
         self.gameTurn = 0
+
+        # ui button reset
+        self.ui_runner.info_panel.resetTimer()
 
         # reset cell mat in every components
         assert self.core_grid is not None, "core_grid is not initialised properly"

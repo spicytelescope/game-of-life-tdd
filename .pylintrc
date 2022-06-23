@@ -7,4 +7,4 @@ disable=E0401, C0301, C0103, E0015
 
 [pre-commit-hook]
 command=custom_pylint
-disable=E0401, C0301, C0103, E0015, W0511, R0903
+disable=E0401, C0301, C0103, E0015, W0511, R0903, W0106

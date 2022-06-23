@@ -32,15 +32,16 @@ class ButtonPanel:
         assert all(
             label in callbacks.keys() for label in self.labels
         ), f"the following labels must be specified as key in the callbacks : {(' ').join(self.labels)}"
-        self.buttons: List[UIButton] = [
-            UIButton(
+        self.buttons: Dict = {
+            label: UIButton(
                 [self.size[0] // 2, self.size[1] // (len(self.labels) * 2)],
                 font_size * 2,  # factor 2 to get big button text effect
                 label=label,
                 callback=self.callbacks[label],
+                clickable=False,
             )
             for label in self.labels
-        ]
+        }
         self.blitPoints = {
             self.labels[i]: [
                 self.size[0] // 2,
@@ -71,7 +72,7 @@ class ButtonPanel:
         ), "info panel has not been initialised yet"
 
         self.surface.fill(self.ui_settings["background_color"])
-        for button in self.buttons:
+        for button in list(self.buttons.values()):
             button_surf: pygame.surface.Surface = button.draw()
             self.surface.blit(
                 button_surf,
@@ -86,7 +87,7 @@ class ButtonPanel:
         Args:
             event (pygame.event.Event): pygame event object checked for the click
         """
-        for button in self.buttons:
+        for button in list(self.buttons.values()):
             button.setClickState(
                 button.surface.get_rect(
                     center=self.blitPoints[button.ui_settings["label"]]

@@ -194,6 +194,12 @@ class UIRunner:
         self.display_panel.runEditMode()
         self.info_panel.setEditMode(False)
 
+        for button in list(self.button_panel.buttons.values()):
+            button.setClickableState(False) if button.ui_settings["label"] in [
+                "STOP",
+                "RESET",
+            ] else button.setClickableState(True)
+
         return self.display_panel.cell_mat
 
     def validateUIParams(self) -> None:
