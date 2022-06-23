@@ -17,6 +17,5 @@ BAD_RES_ODD: List[int] = [1021, 1022]
 BAD_FONT: str = "some_bad_font_name"
 
 # check if bad colors raises expected error
-BAD_BG_COLOR: List[int] = [500, 500, 500]
 BAD_CELL_COLOR: List[int] = [350, 350, 350]
 BAD_TEXT_COLOR: List[int] = [260, 260, 260]

@@ -3,5 +3,6 @@
 """
 from src.MainRunner import MainRunner
 
-main_runner: MainRunner = MainRunner()
-main_runner.mainLoop()
+if __name__ == "__main__":
+    main_runner: MainRunner = MainRunner()
+    main_runner.mainLoop()

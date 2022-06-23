@@ -14,11 +14,18 @@ REQUIRED_CONF_FIELDS: Dict = {
         "framerate",
     ],
     "simulation": ["turn_timeout"],
-    "ui": ["background_color", "cell_color", "grid_color", "text_color", "font"],
+    "ui": [
+        "side_panel_background_color",
+        "display_background_color",
+        "cell_color",
+        "grid_color",
+        "text_color",
+        "font",
+    ],
 }
 
 
-def fetch_game_config(conf_filepath: str = "../config.json"):
+def fetch_game_config(conf_filepath: str = "../../config.json"):
     """return the game config by fetching it from <conf_filepath>
 
     Args:

@@ -13,7 +13,6 @@ from tests.core_ui_tests.test_config import BAD_RES_HIGH
 from tests.core_ui_tests.test_config import BAD_RES_LOW
 from tests.core_ui_tests.test_config import BAD_RES_ODD
 from tests.core_ui_tests.test_config import BAD_FONT
-from tests.core_ui_tests.test_config import BAD_BG_COLOR
 from tests.core_ui_tests.test_config import BAD_CELL_COLOR
 from tests.core_ui_tests.test_config import BAD_TEXT_COLOR
 
@@ -45,12 +44,8 @@ def test_bad_font() -> None:
 
 
 def test_bad_colors() -> None:
-    """check if a bad color for the background / cells raises expected error"""
+    """check if a bad color for the text / cells raises expected error"""
 
-    with pytest.raises(AssertionError):
-        ui_runner: UIRunner = UIRunner(
-            fetch_game_config(), background_color=BAD_BG_COLOR
-        )
     with pytest.raises(AssertionError):
         ui_runner: UIRunner = UIRunner(fetch_game_config(), cell_color=BAD_CELL_COLOR)
     with pytest.raises(AssertionError):

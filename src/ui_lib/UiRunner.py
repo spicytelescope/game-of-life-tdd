@@ -25,7 +25,6 @@ class UIRunner:
         res: Union[List[int], None] = None,
         grid_dim: Union[List[int], None] = None,
         font: Union[str, None] = None,
-        background_color: Union[List[int], None] = None,
         cell_color: Union[List[int], None] = None,
         grid_color: Union[List[int], None] = None,
         text_color: Union[List[int], None] = None,
@@ -39,12 +38,15 @@ class UIRunner:
             if grid_dim is not None
             else self.gameConfig["videoSettings"]["grid_dim"],
             "font": font if font is not None else self.gameConfig["ui"]["font"],
-            "background_color": background_color
-            if background_color is not None
-            else self.gameConfig["ui"]["background_color"],
             "cell_color": cell_color
             if cell_color is not None
             else self.gameConfig["ui"]["cell_color"],
+            "side_panel_background_color": self.gameConfig["ui"][
+                "side_panel_background_color"
+            ],
+            "display_background_color": self.gameConfig["ui"][
+                "display_background_color"
+            ],
             "grid_color": grid_color
             if grid_color is not None
             else self.gameConfig["ui"]["grid_color"],
@@ -94,13 +96,9 @@ class UIRunner:
             ],
             int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
             font=str(self.videoSettings["font"]),
+            background_color=self.videoSettings["side_panel_background_color"],
         )
 
-        # {
-        #         "START": self.info_panel.startTimer,
-        #         "STOP": self.info_panel.stopTimer,
-        #         "RESET": self.info_panel.resetTimer,
-        # }
         self.button_panel: ButtonPanel = ButtonPanel(
             [
                 int(0.3 * self.videoSettings["res"][0]),
@@ -109,10 +107,8 @@ class UIRunner:
             int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
             self.gameCallbacks,
             str(self.videoSettings["font"]),
+            background_color=self.videoSettings["side_panel_background_color"],
         )
-
-        # def setUnclickButtonPostEdit:
-        #     self.button_panel.buttons["START"]
 
         self.display_panel: DisplayPanel = DisplayPanel(
             [int(0.7 * self.videoSettings["res"][0]), self.videoSettings["res"][1]],
@@ -120,9 +116,9 @@ class UIRunner:
             int(self.videoSettings["res"][1] * self.videoSettings["font_size_ratio"]),
             {
                 "refresh_screen": self.draw,
-                # "set_button_post_edit": setUnclickButtonPostEdit,
             },
             cell_color=self.videoSettings["cell_color"],
+            background_color=self.videoSettings["display_background_color"],
         )
 
     def __refreshComponents(self) -> None:
@@ -148,7 +144,7 @@ class UIRunner:
         ), "info panel has not been initialised yet"
 
         pygame.surface.Surface.fill(
-            self.main_window, tuple(self.gameConfig["ui"]["background_color"])
+            self.main_window, tuple(self.gameConfig["ui"]["display_background_color"])
         )
 
         self.__refreshComponents()
@@ -189,16 +185,17 @@ class UIRunner:
         Returns:
             np.ndarray: the default cell matrix state for the game
         """
+        for button in list(self.button_panel.buttons.values()):
+            button.setClickableState(False)
+
         self.update()
         self.info_panel.setEditMode(True)
         self.display_panel.runEditMode()
         self.info_panel.setEditMode(False)
 
         for button in list(self.button_panel.buttons.values()):
-            button.setClickableState(False) if button.ui_settings["label"] in [
-                "STOP",
-                "RESET",
-            ] else button.setClickableState(True)
+            if button.ui_settings["label"] == "START":
+                button.setClickableState(True)
 
         return self.display_panel.cell_mat
 
@@ -240,7 +237,12 @@ class UIRunner:
             self.videoSettings["font"] in pygame.font.get_fonts()
         ), f"Unknown {self.videoSettings['font']} (pygame.font.get_fonts() to know the available ones)"
 
-        for test_color_name in ["background_color", "cell_color", "text_color"]:
+        for test_color_name in [
+            "display_background_color",
+            "side_panel_background_color",
+            "cell_color",
+            "text_color",
+        ]:
             assert (
                 (np.array(self.videoSettings[test_color_name]) >= 0)
                 & (np.array(self.videoSettings[test_color_name]) <= 255)

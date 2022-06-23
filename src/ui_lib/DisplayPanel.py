@@ -127,6 +127,3 @@ class DisplayPanel:
             self.editModeCallbacks["refresh_screen"]()
             self._draw()
             pygame.display.flip()
-
-        # make the other button unclickable so that the user can juste start the simulation
-        # self.editModeCallbacks["set_button_post_edit"]()
